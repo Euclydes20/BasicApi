@@ -1,4 +1,5 @@
 using Api;
+using Api.Infra.Database;
 using Microsoft.AspNetCore.Rewrite;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -15,6 +16,18 @@ Startup.SetAuthenticationService(builder.Services);
 Startup.SetApiDocumentation(builder.Services);
 
 var app = builder.Build();
+
+try
+{
+    DatabaseConnection.LoadDatabaseConfig(DbType.Postgres);
+    DatabaseConnection.CreateDatabase();
+}
+catch (Exception ex)
+{
+    Console.ForegroundColor = ConsoleColor.Red;
+    Console.Error.WriteLine(ex.Message);
+    Console.ResetColor();
+}
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
