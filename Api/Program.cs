@@ -1,5 +1,6 @@
 using Api;
 using Api.Infra.Database;
+using FluentMigrator.Runner;
 using Microsoft.AspNetCore.Rewrite;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -14,13 +15,19 @@ builder.Services.AddDirectoryBrowser();
 
 Startup.SetAuthenticationService(builder.Services);
 Startup.SetApiDocumentation(builder.Services);
+DatabaseConnection.LoadDatabaseConfig(DbType.Postgres);
+ServiceRegister.Register(builder.Services);
 
 var app = builder.Build();
 
 try
 {
-    DatabaseConnection.LoadDatabaseConfig(DbType.Postgres);
     DatabaseConnection.CreateDatabase();
+    using (var scope = app.Services.CreateScope())
+    {
+        var runner = scope.ServiceProvider.GetService<IMigrationRunner>();
+        runner.MigrateUp();
+    }    
 }
 catch (Exception ex)
 {

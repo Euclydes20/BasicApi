@@ -8,19 +8,19 @@ namespace Api.Infra.Database
 {
     public class DatabaseConnection
     {
-        public static readonly string ConnectionStringPropertyName = "Default";
+        internal static readonly string ConnectionStringPropertyName = "Default";
 
-        private static string Server = string.Empty;
-        private static string User = string.Empty;
-        private static string Password = string.Empty;
-        private static string DatabaseName = string.Empty;
-        private static int Port = 0;
-        private static string SSLMode = string.Empty;
-        private static string EntityAdminDatabase = string.Empty;
-        private static int Timeout = 0;
-        private static int CommandTimeout = 0;
+        internal static string Server { get; private set; } = string.Empty;
+        internal static string User { get; private set; } = string.Empty;
+        internal static string Password { get; private set; } = string.Empty;
+        internal static string DatabaseName { get; private set; } = string.Empty;
+        internal static int Port { get; private set; } = 0;
+        internal static string SSLMode { get; private set; } = string.Empty;
+        internal static string EntityAdminDatabase { get; private set; } = string.Empty;
+        internal static int Timeout { get; private set; } = 0;
+        internal static int CommandTimeout { get; private set; } = 0;
 
-        private static DbType DatabaseType = DbType.Nenhum;
+        internal static DbType DatabaseType { get; private set; } = DbType.Nenhum;
 
         internal static void LoadDatabaseConfig(DbType databaseType)
         {
@@ -154,7 +154,7 @@ namespace Api.Infra.Database
             }
         }
 
-        private static string GetConnectionString(bool master = false, bool noDatabase = false)
+        internal static string GetConnectionString(bool master = false, bool noDatabase = false)
         {
             string connectionString = string.Empty;
 
