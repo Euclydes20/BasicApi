@@ -1,9 +1,15 @@
 ﻿using Api.Domain.Annotations;
+using Api.Domain.Secutiry;
+using Api.Domain.Users;
 using Api.Infra.Database;
 using Api.Repositories.Annotations;
+using Api.Repositories.Users;
 using Api.Services.Annotations;
+using Api.Services.Security;
+using Api.Services.Users;
 using FluentMigrator.Runner;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Api
 {
@@ -14,6 +20,17 @@ namespace Api
             serviceDescriptors.AddTransient<IAnnotationService, AnnotationService>();
             serviceDescriptors.AddTransient<IAnnotationRepository, AnnotationRepository>();
 
+            serviceDescriptors.AddTransient<IAuthenticationService, AuthenticationService>();
+
+            serviceDescriptors.AddTransient<IUserService, UserService>();
+            serviceDescriptors.AddTransient<IUserRepository, UserRepository>();
+
+            RegisterDbContext(serviceDescriptors);
+            RegisterMigrationRunner(serviceDescriptors);
+        }
+
+        internal static void RegisterDbContext(IServiceCollection serviceDescriptors)
+        {
             var dbType = DatabaseConnection.DatabaseType;
             var connectionString = DatabaseConnection.GetConnectionString();
             switch (dbType)
@@ -29,8 +46,6 @@ namespace Api
                     serviceDescriptors.AddEntityFrameworkNpgsql().AddDbContext<DataContext>(options => options.UseNpgsql(connectionString));
                     break;
             }
-
-            RegisterMigrationRunner(serviceDescriptors);
         }
 
         internal static void RegisterMigrationRunner(IServiceCollection serviceDescriptors)

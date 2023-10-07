@@ -12,7 +12,7 @@ namespace Api.Repositories.Annotations
             this.dataContext = dataContext;
         }
 
-        public Annotation Create(Annotation annotation)
+        public Annotation Add(Annotation annotation)
         {
             dataContext.Add(annotation);
             dataContext.SaveChanges();
@@ -28,7 +28,7 @@ namespace Api.Repositories.Annotations
             return annotation;
         }
 
-        public void Delete(int id)
+        public void Remove(int id)
         {
             dataContext.Remove(Get(id));
             dataContext.SaveChanges();

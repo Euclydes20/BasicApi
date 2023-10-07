@@ -2,9 +2,9 @@
 {
     public interface IAnnotationRepository
     {
-        Annotation Create(Annotation annotation);
+        Annotation Add(Annotation annotation);
         Annotation Update(Annotation annotation);
-        void Delete(int id);
+        void Remove(int id);
         IEnumerable<Annotation> Get();
         Annotation Get(int id);
     }

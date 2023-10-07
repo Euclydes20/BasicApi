@@ -1,4 +1,5 @@
 ﻿using Api.Domain.Annotations;
+using Api.Domain.Users;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using System.Reflection.Metadata;
@@ -35,5 +36,6 @@ namespace Api.Infra.Database
         }
 
         public DbSet<Annotation> Annotation { get; set; }
+        public DbSet<User> User { get; set; }
     }
 }

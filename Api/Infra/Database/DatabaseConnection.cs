@@ -47,6 +47,8 @@ namespace Api.Infra.Database
             EntityAdminDatabase = (dbConnectionStringBuilder.ContainsKey("EF Admin Database") ? dbConnectionStringBuilder["EF Admin Database"].ToString() : string.Empty) ?? string.Empty;
             Timeout = Math.Max(dbConnectionStringBuilder.ContainsKey("Timeout") ? Convert.ToInt32(dbConnectionStringBuilder["Timeout"]) : 60, 60);
             CommandTimeout = Timeout;
+
+            AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
         }
 
         internal static void CreateDatabase()

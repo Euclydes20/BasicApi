@@ -9,7 +9,6 @@
   <ItemGroup>
     <Folder Include="Auxiliary\" />
     <Folder Include="Models\Annotations\" />
-    <Folder Include="Security\" />
   </ItemGroup>
 
   <ItemGroup>

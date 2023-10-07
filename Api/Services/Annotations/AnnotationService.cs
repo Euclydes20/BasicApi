@@ -11,9 +11,9 @@ namespace Api.Services.Annotations
             _annotationRepository = annotationRepository;
         }
 
-        public Annotation Create(Annotation annotation)
+        public Annotation Add(Annotation annotation)
         {
-            return _annotationRepository.Create(annotation);
+            return _annotationRepository.Add(annotation);
         }
 
         public Annotation Update(Annotation annotation)
@@ -21,9 +21,9 @@ namespace Api.Services.Annotations
             return _annotationRepository.Update(annotation);
         }
 
-        public void Delete(int id)
+        public void Remove(int id)
         {
-            _annotationRepository.Delete(id);
+            _annotationRepository.Remove(id);
         }
 
         public IEnumerable<Annotation> Get()

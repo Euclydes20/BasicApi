@@ -1,4 +1,4 @@
-﻿using Api.Services;
+﻿using Api.Security;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;

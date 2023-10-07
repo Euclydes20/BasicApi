@@ -1,31 +1,31 @@
-﻿using Api.Domain.Annotations;
+﻿using Api.Domain.Users;
 using Api.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Api.Controllers.Annotations
+namespace Api.Controllers.Users
 {
     [ApiController]
     [Authorize(AuthenticationSchemes = Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerDefaults.AuthenticationScheme)]
     [Route("v1/[controller]")]
-    [Tags("Annotations")]
-    public class AnnotationController : ControllerBase
+    [Tags("Users")]
+    public class UserController : ControllerBase
     {
-        private readonly IAnnotationService _annotationService;
+        private readonly IUserService _userService;
 
-        public AnnotationController(IAnnotationService annotationService)
+        public UserController(IUserService userService)
         {
-            _annotationService = annotationService;
+            _userService = userService;
         }
 
         [HttpPost]
         [Route("")]
-        public async Task<IActionResult> Add(Annotation annotation)
+        public async Task<IActionResult> Add(User user)
         {
-            var response = new ResponseInfo<Annotation>();
+            var response = new ResponseInfo<User>();
             try
             {
-                response.Data = _annotationService.Add(annotation);
+                response.Data = await _userService.AddAsync(user);
 
                 return StatusCode(StatusCodes.Status201Created, response);
             }
@@ -40,12 +40,12 @@ namespace Api.Controllers.Annotations
 
         [HttpPut]
         [Route("")]
-        public async Task<IActionResult> Update(Annotation annotation)
+        public async Task<IActionResult> Update(User user)
         {
-            var response = new ResponseInfo<Annotation>();
+            var response = new ResponseInfo<User>();
             try
             {
-                response.Data = _annotationService.Update(annotation);
+                response.Data = await _userService.UpdateAsync(user);
 
                 return Ok(response);
             }
@@ -62,10 +62,10 @@ namespace Api.Controllers.Annotations
         [Route("{id}")]
         public async Task<IActionResult> Remove(int id)
         {
-            var response = new ResponseInfo<Annotation>();
+            var response = new ResponseInfo<object>();
             try
             {
-                _annotationService.Remove(id);
+                await _userService.RemoveAsync(id);
                 return Ok(response);
             }
             catch (Exception ex)
@@ -81,10 +81,10 @@ namespace Api.Controllers.Annotations
         [Route("")]
         public async Task<IActionResult> Get()
         {
-            var response = new ResponseInfo<IEnumerable<Annotation>>();
+            var response = new ResponseInfo<IEnumerable<User>>();
             try
             {
-                response.Data = _annotationService.Get();
+                response.Data = await _userService.GetAsync();
 
                 return Ok(response);
             }
@@ -101,10 +101,10 @@ namespace Api.Controllers.Annotations
         [Route("{id}")]
         public async Task<IActionResult> Get(int id)
         {
-            var response = new ResponseInfo<Annotation>();
+            var response = new ResponseInfo<User?>();
             try
             {
-                response.Data = _annotationService.Get(id);
+                response.Data = await _userService.GetAsync(id);
 
                 return Ok(response);
             }
