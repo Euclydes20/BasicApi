@@ -15,7 +15,7 @@ namespace Api.Services.Users
         public async Task<User> AddAsync(User user)
         {
             if (user is null)
-                throw new ArgumentNullException(nameof(user), "Dados do usuário inválido.");
+                throw new ArgumentNullException(nameof(user), "Dados do usuário é inválido.");
 
             user.Validate();
 
@@ -28,7 +28,7 @@ namespace Api.Services.Users
         public async Task<User> UpdateAsync(User user)
         {
             if (user is null)
-                throw new ArgumentNullException(nameof(user), "Dados do usuário inválido.");
+                throw new ArgumentNullException(nameof(user), "Dados do usuário é inválido.");
 
             var userSaved = await GetAsync(user.Id)
                 ?? throw new ArgumentNullException(nameof(user), "Usuário não localizado.");
@@ -44,12 +44,12 @@ namespace Api.Services.Users
             return await _userRepository.UpdateAsync(user);
         }
 
-        public async Task RemoveAsync(int id)
+        public async Task RemoveAsync(int userId)
         {
-            if (id <= 0)
-                throw new ArgumentException("O Id do usuário não foi informado.", nameof(id));
+            if (userId <= 0)
+                throw new ArgumentException("O Id do usuário não foi informado.", nameof(userId));
 
-            await RemoveAsync(await GetAsync(id));
+            await RemoveAsync(await GetAsync(userId));
         }
 
         public async Task RemoveAsync(User user)
@@ -68,12 +68,12 @@ namespace Api.Services.Users
             return await _userRepository.GetAsync();
         }
 
-        public async Task<User?> GetAsync(int id)
+        public async Task<User?> GetAsync(int userId)
         {
-            if (id <= 0)
-                return null;
+            if (userId <= 0)
+                throw new ArgumentException("O Id do usuário não foi informado.", nameof(userId));
 
-            return await _userRepository.GetAsync(id);
+            return await _userRepository.GetAsync(userId);
         }
 
         public async Task<User?> GetByLoginAsync(string login)
@@ -95,7 +95,7 @@ namespace Api.Services.Users
         public async Task UpdateLastLoginAsync(User user)
         {
             if (user is null)
-                throw new ArgumentException("Dados do usuário inválido.", nameof(user));
+                throw new ArgumentException("Dados do usuário é inválido.", nameof(user));
 
             var userSaved = await GetAsync(user.Id);
             if (userSaved is null)

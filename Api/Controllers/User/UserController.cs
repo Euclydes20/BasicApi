@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Api.Controllers.Users
 {
     [ApiController]
-    [Authorize(AuthenticationSchemes = Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerDefaults.AuthenticationScheme)]
+    [Authorize]
     [Route("v1/[controller]")]
     [Tags("Users")]
     public class UserController : ControllerBase
@@ -20,7 +20,7 @@ namespace Api.Controllers.Users
 
         [HttpPost]
         [Route("")]
-        public async Task<IActionResult> Add(User user)
+        public async Task<IActionResult> AddAsync(User user)
         {
             var response = new ResponseInfo<User>();
             try
@@ -40,7 +40,7 @@ namespace Api.Controllers.Users
 
         [HttpPut]
         [Route("")]
-        public async Task<IActionResult> Update(User user)
+        public async Task<IActionResult> UpdateAsync(User user)
         {
             var response = new ResponseInfo<User>();
             try
@@ -60,7 +60,7 @@ namespace Api.Controllers.Users
 
         [HttpDelete]
         [Route("{id}")]
-        public async Task<IActionResult> Remove(int id)
+        public async Task<IActionResult> RemoveAsync(int id)
         {
             var response = new ResponseInfo<object>();
             try
@@ -79,7 +79,7 @@ namespace Api.Controllers.Users
 
         [HttpGet]
         [Route("")]
-        public async Task<IActionResult> Get()
+        public async Task<IActionResult> GetAsync()
         {
             var response = new ResponseInfo<IEnumerable<User>>();
             try
@@ -99,7 +99,7 @@ namespace Api.Controllers.Users
 
         [HttpGet]
         [Route("{id}")]
-        public async Task<IActionResult> Get(int id)
+        public async Task<IActionResult> GetAsync(int id)
         {
             var response = new ResponseInfo<User?>();
             try

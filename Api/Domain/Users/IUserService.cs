@@ -6,7 +6,7 @@ namespace Api.Domain.Users
     {
         Task<User> AddAsync(User user);
         Task<User> UpdateAsync(User user);
-        Task RemoveAsync(int id);
+        Task RemoveAsync(int userId);
         Task RemoveAsync(User user);
         Task<IEnumerable<User>> GetAsync();
         Task<User?> GetAsync(int id);

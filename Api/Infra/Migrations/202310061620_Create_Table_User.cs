@@ -1,4 +1,5 @@
-﻿using FluentMigrator;
+﻿using Api.Security;
+using FluentMigrator;
 
 namespace Api.Infra.Migrations
 {
@@ -37,7 +38,7 @@ namespace Api.Infra.Migrations
                 {
                     Name = "Administrador",
                     Login = "Adm",
-                    Password = "123",
+                    Password = "123".Hash(),
                     Super = true,
                     ProvisoryPassword = false,
                     CreationDate = DateTime.Now,

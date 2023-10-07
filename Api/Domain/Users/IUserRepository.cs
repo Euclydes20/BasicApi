@@ -8,7 +8,7 @@ namespace Api.Domain.Users
         Task<User> UpdateAsync(User user);
         Task RemoveAsync(User user);
         Task<IEnumerable<User>> GetAsync();
-        Task<User?> GetAsync(int id);
+        Task<User?> GetAsync(int userId);
         Task<User?> GetByLoginAsync(string login);
         Task<bool> ExistingAsync(Expression<Func<User, bool>> func);
     }

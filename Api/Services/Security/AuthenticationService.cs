@@ -25,10 +25,20 @@ namespace Api.Services.Security
             if (authentication is null)
                 throw new ArgumentNullException(nameof(authentication.Password), "Senha inválida.");
 
+            try
+            {
+                if (authentication.EncryptedPassword)
+                    authentication.Password = CryptographyService.DecryptString(authentication.Password);
+            }
+            catch
+            {
+                throw new ArgumentNullException(nameof(authentication.Password), "Senha inválida.");
+            }
+
             var user = await _userService.GetByLoginAsync(authentication.Login)
                 ?? throw new Exception("Credenciais inválidas.");
 
-            if (authentication.Password != user.Password)
+            if (authentication.Password.Hash() != user.Password)
                 throw new Exception("Credenciais inválidas.");
 
             var tokenInfo = TokenService.GenerateToken(user)

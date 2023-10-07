@@ -1,8 +1,10 @@
 ﻿using Api.Security;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Reflection;
+using System.Security.Claims;
 
 namespace Api
 {
@@ -49,6 +51,20 @@ namespace Api
                         return Task.CompletedTask;
                     }
                 };
+            });
+
+            services.AddAuthorization(o =>
+            {
+                var defaultAuthorizationPolicyBuilder = 
+                    new AuthorizationPolicyBuilder(JwtBearerDefaults.AuthenticationScheme, "Bearer")
+                    .RequireAuthenticatedUser().Build();
+                
+                o.DefaultPolicy = defaultAuthorizationPolicyBuilder;
+            });
+
+            services.Configure<IISOptions>(options =>
+            {
+                options.ForwardClientCertificate = false;
             });
         }
 

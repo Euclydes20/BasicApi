@@ -20,12 +20,12 @@ namespace Api.Controllers.Annotations
 
         [HttpPost]
         [Route("")]
-        public async Task<IActionResult> Add(Annotation annotation)
+        public async Task<IActionResult> AddAsync(Annotation annotation)
         {
             var response = new ResponseInfo<Annotation>();
             try
             {
-                response.Data = _annotationService.Add(annotation);
+                response.Data = await _annotationService.AddAsync(annotation);
 
                 return StatusCode(StatusCodes.Status201Created, response);
             }
@@ -40,12 +40,12 @@ namespace Api.Controllers.Annotations
 
         [HttpPut]
         [Route("")]
-        public async Task<IActionResult> Update(Annotation annotation)
+        public async Task<IActionResult> UpdateAsync(Annotation annotation)
         {
             var response = new ResponseInfo<Annotation>();
             try
             {
-                response.Data = _annotationService.Update(annotation);
+                response.Data = await _annotationService.UpdateAsync(annotation);
 
                 return Ok(response);
             }
@@ -60,12 +60,12 @@ namespace Api.Controllers.Annotations
 
         [HttpDelete]
         [Route("{id}")]
-        public async Task<IActionResult> Remove(int id)
+        public async Task<IActionResult> RemoveAsync(int id)
         {
             var response = new ResponseInfo<Annotation>();
             try
             {
-                _annotationService.Remove(id);
+                await _annotationService.RemoveAsync(id);
                 return Ok(response);
             }
             catch (Exception ex)
@@ -79,12 +79,12 @@ namespace Api.Controllers.Annotations
 
         [HttpGet]
         [Route("")]
-        public async Task<IActionResult> Get()
+        public async Task<IActionResult> GetAsync()
         {
             var response = new ResponseInfo<IEnumerable<Annotation>>();
             try
             {
-                response.Data = _annotationService.Get();
+                response.Data = await _annotationService.GetAsync();
 
                 return Ok(response);
             }
@@ -99,12 +99,12 @@ namespace Api.Controllers.Annotations
 
         [HttpGet]
         [Route("{id}")]
-        public async Task<IActionResult> Get(int id)
+        public async Task<IActionResult> GetAsync(int id)
         {
             var response = new ResponseInfo<Annotation>();
             try
             {
-                response.Data = _annotationService.Get(id);
+                response.Data = await _annotationService.GetAsync(id);
 
                 return Ok(response);
             }

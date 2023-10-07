@@ -24,10 +24,10 @@
                 throw new ArgumentNullException(nameof(Password), "Senha não informado.");
 
             if (CreationDate <= DateTime.MinValue)
-                throw new ArgumentNullException(nameof(CreationDate), "Data de criação inválida.");
+                throw new ArgumentNullException(nameof(CreationDate), "Data de criação é inválida.");
 
             if (LastLogin <= DateTime.MinValue)
-                throw new ArgumentNullException(nameof(LastLogin), "Data de último login inválida.");
+                throw new ArgumentNullException(nameof(LastLogin), "Data de último login é inválida.");
         }
     }
 }

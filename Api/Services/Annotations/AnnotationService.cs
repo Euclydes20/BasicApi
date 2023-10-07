@@ -1,4 +1,6 @@
 ﻿using Api.Domain.Annotations;
+using Api.Domain.Users;
+using System.Linq.Expressions;
 
 namespace Api.Services.Annotations
 {
@@ -11,29 +13,61 @@ namespace Api.Services.Annotations
             _annotationRepository = annotationRepository;
         }
 
-        public Annotation Add(Annotation annotation)
+        public async Task<Annotation> AddAsync(Annotation annotation)
         {
-            return _annotationRepository.Add(annotation);
+            if (annotation is null)
+                throw new ArgumentNullException(nameof(annotation), "Dados da anotação é inválido.");
+
+            annotation.Validate();
+
+            return await _annotationRepository.AddAsync(annotation);
         }
 
-        public Annotation Update(Annotation annotation)
+        public async Task<Annotation> UpdateAsync(Annotation annotation)
         {
-            return _annotationRepository.Update(annotation);
+            if (annotation is null)
+                throw new ArgumentNullException(nameof(annotation), "Dados da anotação é inválido.");
+
+            if (!await ExistingAsync(a => a.Id != annotation.Id))
+                throw new ArgumentNullException("Anotação não localizada.");
+
+            annotation.Validate();
+
+            return await _annotationRepository.UpdateAsync(annotation);
         }
 
-        public void Remove(int id)
+        public async Task RemoveAsync(int annotationId)
         {
-            _annotationRepository.Remove(id);
+            if (annotationId <= 0)
+                throw new ArgumentException("O Id da anotação não foi informado.", nameof(annotationId));
+
+            await RemoveAsync(await GetAsync(annotationId));
+        }
+        
+        public async Task RemoveAsync(Annotation annotation)
+        {
+            if (annotation is null)
+                throw new ArgumentNullException("Anotação não localizada.");
+
+            await _annotationRepository.RemoveAsync(annotation);
         }
 
-        public IEnumerable<Annotation> Get()
+        public async Task<IEnumerable<Annotation>> GetAsync()
         {
-            return _annotationRepository.Get();
+            return await _annotationRepository.GetAsync();
         }
 
-        public Annotation Get(int id)
+        public async Task<Annotation?> GetAsync(int annotationId)
         {
-            return _annotationRepository.Get(id);
+            if (annotationId <= 0)
+                throw new ArgumentException("O Id da anotação não foi informado.", nameof(annotationId));
+
+            return await _annotationRepository.GetAsync(annotationId);
+        }
+
+        public async Task<bool> ExistingAsync(Expression<Func<Annotation, bool>> func)
+        {
+            return await _annotationRepository.ExistingAsync(func);
         }
     }
 }

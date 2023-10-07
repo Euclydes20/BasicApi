@@ -45,10 +45,10 @@ namespace Api.Repositories.Users
                 .ToListAsync();
         }
 
-        public async Task<User?> GetAsync(int id)
+        public async Task<User?> GetAsync(int userId)
         {
             return await dataContext.User.AsNoTracking()
-                .FirstOrDefaultAsync(u => u.Id == id);
+                .FirstOrDefaultAsync(u => u.Id == userId);
         }
 
         public async Task<User?> GetByLoginAsync(string login)

@@ -1,5 +1,8 @@
 ﻿using Api.Domain.Annotations;
+using Api.Domain.Users;
 using Api.Infra.Database;
+using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace Api.Repositories.Annotations
 {
@@ -12,37 +15,46 @@ namespace Api.Repositories.Annotations
             this.dataContext = dataContext;
         }
 
-        public Annotation Add(Annotation annotation)
+        public async Task<Annotation> AddAsync(Annotation annotation)
         {
-            dataContext.Add(annotation);
-            dataContext.SaveChanges();
+            await dataContext.AddAsync(annotation);
+
+            await dataContext.SaveChangesAsync();
 
             return annotation;
         }
 
-        public Annotation Update(Annotation annotation)
+        public async Task<Annotation> UpdateAsync(Annotation annotation)
         {
             dataContext.Update(annotation);
-            dataContext.SaveChanges();
+
+            await dataContext.SaveChangesAsync();
 
             return annotation;
         }
 
-        public void Remove(int id)
+        public async Task RemoveAsync(Annotation annotation)
         {
-            dataContext.Remove(Get(id));
-            dataContext.SaveChanges();
+            dataContext.Remove(annotation);
+            await dataContext.SaveChangesAsync();
         }
 
-        public IEnumerable<Annotation> Get()
+        public async Task<IEnumerable<Annotation>> GetAsync()
         {
-            return dataContext.Annotation.ToList();
+            return await dataContext.Annotation
+                .ToListAsync();
         }
 
-        public Annotation Get(int id)
+        public async Task<Annotation?> GetAsync(int annotationId)
         {
-            return dataContext.Annotation
-                    .FirstOrDefault(a => a.Id == id);
+            return await dataContext.Annotation
+                .FirstOrDefaultAsync(a => a.Id == annotationId);
+        }
+
+        public async Task<bool> ExistingAsync(Expression<Func<Annotation, bool>> func)
+        {
+            return await dataContext.Annotation
+                .AnyAsync(func);
         }
     }
 }

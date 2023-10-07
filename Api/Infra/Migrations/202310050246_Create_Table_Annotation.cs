@@ -17,7 +17,7 @@ namespace Api.Infra.Migrations
                 .WithColumn("Title").AsString(100)
                 .WithColumn("Text").AsString()
                 .WithColumn("ChangeDate").AsDateTime()
-                .WithColumn("Author").AsInt32();
+                .WithColumn("UserId").AsInt32();
         }
     }
 }
