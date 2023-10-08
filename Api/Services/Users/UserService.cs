@@ -1,4 +1,5 @@
 ﻿using Api.Domain.Users;
+using Api.Security;
 using System.Linq.Expressions;
 
 namespace Api.Services.Users
@@ -17,10 +18,15 @@ namespace Api.Services.Users
             if (user is null)
                 throw new ArgumentNullException(nameof(user), "Dados do usuário é inválido.");
 
+            user.CreationDate = DateTime.Now;
             user.Validate();
 
             if (await ExistingAsync(u => u.Login == user.Login))
                 throw new Exception("Login já utilizado.");
+
+            user.ProvisoryPassword = true;
+            user.Password = user.Password.Hash();
+            user.Blocked = false;
 
             return await _userRepository.AddAsync(user);
         }
@@ -36,6 +42,9 @@ namespace Api.Services.Users
             if (userSaved.Super)
                 throw new Exception("Este usuário não pode ser alterado.");
 
+            user.CreationDate = userSaved.CreationDate;
+            user.LastLogin = userSaved.LastLogin;
+            user.Password = userSaved.Password;
             user.Validate();
 
             if (await ExistingAsync(u => u.Id != user.Id && u.Login == user.Login))

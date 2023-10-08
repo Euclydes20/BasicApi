@@ -1,4 +1,7 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Api.Domain.Users;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace Api.Domain.Annotations
 {
@@ -8,8 +11,12 @@ namespace Api.Domain.Annotations
         public int Id { get; set; }
         public string Title { get; set; }
         public string Text { get; set; }
-        public DateTime ChangeDate { get; set; }
+        public DateTime CreationDate { get; set; }
+        public DateTime LastChange { get; set; }
         public int UserId { get; set; }
+
+        [NotMapped, JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public User User { get; set; }
 
         internal void Validate()
         {
@@ -19,7 +26,7 @@ namespace Api.Domain.Annotations
             if (string.IsNullOrEmpty(Text?.Trim()))
                 throw new ArgumentNullException(nameof(Text), "Texto não informado.");
 
-            if (ChangeDate <= DateTime.MinValue)
+            if (LastChange <= DateTime.MinValue)
                 throw new ArgumentNullException(nameof(Title), "Data de alteração é inválida.");
 
             if (UserId <= 0)

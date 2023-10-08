@@ -17,7 +17,8 @@ namespace Api.Infra.Migrations
                 .WithColumn("Id").AsInt32().Identity().PrimaryKey()
                 .WithColumn("Name").AsString(100)
                 .WithColumn("Login").AsString(30)
-                .WithColumn("Password").AsString()
+                .WithColumn("Password").AsString(65)
+                .WithColumn("Bibliography").AsString(500)
                 .WithColumn("Super").AsBoolean()
                 .WithColumn("ProvisoryPassword").AsBoolean()
                 .WithColumn("CreationDate").AsDateTime()
@@ -39,6 +40,7 @@ namespace Api.Infra.Migrations
                     Name = "Administrador",
                     Login = "Adm",
                     Password = "123".Hash(),
+                    Bibliography = "Usuário administrador do sistema",
                     Super = true,
                     ProvisoryPassword = false,
                     CreationDate = DateTime.Now,

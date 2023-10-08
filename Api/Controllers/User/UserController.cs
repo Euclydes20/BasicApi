@@ -25,7 +25,11 @@ namespace Api.Controllers.Users
             var response = new ResponseInfo<User>();
             try
             {
-                response.Data = await _userService.AddAsync(user);
+                var userAdded = await _userService.AddAsync(user);
+                if (userAdded is not null)
+                    userAdded.Password = null;
+
+                response.Data = userAdded;
 
                 return StatusCode(StatusCodes.Status201Created, response);
             }
@@ -45,7 +49,11 @@ namespace Api.Controllers.Users
             var response = new ResponseInfo<User>();
             try
             {
-                response.Data = await _userService.UpdateAsync(user);
+                var userUpdated = await _userService.UpdateAsync(user);
+                if (userUpdated is not null)
+                    userUpdated.Password = null;
+
+                response.Data = userUpdated;
 
                 return Ok(response);
             }
@@ -66,6 +74,7 @@ namespace Api.Controllers.Users
             try
             {
                 await _userService.RemoveAsync(id);
+
                 return Ok(response);
             }
             catch (Exception ex)
@@ -84,7 +93,10 @@ namespace Api.Controllers.Users
             var response = new ResponseInfo<IEnumerable<User>>();
             try
             {
-                response.Data = await _userService.GetAsync();
+                var users = (await _userService.GetAsync()).ToList();
+                users.ForEach(u => u.Password = null);
+
+                response.Data = users;
 
                 return Ok(response);
             }
@@ -104,7 +116,11 @@ namespace Api.Controllers.Users
             var response = new ResponseInfo<User?>();
             try
             {
-                response.Data = await _userService.GetAsync(id);
+                var user = await _userService.GetAsync(id);
+                if (user is not null)
+                    user.Password = null;
+
+                response.Data = user;
 
                 return Ok(response);
             }

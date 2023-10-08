@@ -7,10 +7,38 @@ namespace Api.Services.Annotations
     public class AnnotationService : IAnnotationService
     {
         private readonly IAnnotationRepository _annotationRepository;
+        private readonly IUserService _userService;
 
-        public AnnotationService(IAnnotationRepository annotationRepository)
+        public AnnotationService(IAnnotationRepository annotationRepository, IUserService userService)
         {
             _annotationRepository = annotationRepository;
+            _userService = userService;
+        }
+
+        private async Task Validate(Annotation annotation)
+        {
+            if (annotation is null)
+                throw new ArgumentNullException(nameof(annotation), "Dados da anotação é inválido.");
+
+            if (!await _userService.ExistingAsync(u => u.Id == annotation.UserId))
+                throw new Exception("Usuário (Autor) não localizado.");
+        }
+
+        private async Task IncludeFKs(Annotation annotation)
+        {
+            if (annotation is null)
+                return;
+
+            annotation.User = await _userService.GetAsync(annotation.UserId);
+        }
+
+        private async Task IncludeFKs(List<Annotation> annotations)
+        {
+            if (annotations is null || !annotations.Any())
+                return;
+
+            foreach (var annotation in annotations)
+                annotation.User = await _userService.GetAsync(annotation.UserId);
         }
 
         public async Task<Annotation> AddAsync(Annotation annotation)
@@ -18,7 +46,11 @@ namespace Api.Services.Annotations
             if (annotation is null)
                 throw new ArgumentNullException(nameof(annotation), "Dados da anotação é inválido.");
 
+            annotation.CreationDate = DateTime.Now;
+            annotation.LastChange = DateTime.Now;
+
             annotation.Validate();
+            await Validate(annotation);
 
             return await _annotationRepository.AddAsync(annotation);
         }
@@ -31,7 +63,10 @@ namespace Api.Services.Annotations
             if (!await ExistingAsync(a => a.Id != annotation.Id))
                 throw new ArgumentNullException("Anotação não localizada.");
 
+            annotation.LastChange = DateTime.Now;
+
             annotation.Validate();
+            await Validate(annotation);
 
             return await _annotationRepository.UpdateAsync(annotation);
         }
@@ -54,7 +89,12 @@ namespace Api.Services.Annotations
 
         public async Task<IEnumerable<Annotation>> GetAsync()
         {
-            return await _annotationRepository.GetAsync();
+            var annotations = (await _annotationRepository.GetAsync())
+                .ToList();
+
+            await IncludeFKs(annotations as List<Annotation>);
+
+            return annotations;
         }
 
         public async Task<Annotation?> GetAsync(int annotationId)
@@ -62,7 +102,11 @@ namespace Api.Services.Annotations
             if (annotationId <= 0)
                 throw new ArgumentException("O Id da anotação não foi informado.", nameof(annotationId));
 
-            return await _annotationRepository.GetAsync(annotationId);
+            var annotation =  await _annotationRepository.GetAsync(annotationId);
+
+            await IncludeFKs(annotation);
+
+            return annotation;
         }
 
         public async Task<bool> ExistingAsync(Expression<Func<Annotation, bool>> func)

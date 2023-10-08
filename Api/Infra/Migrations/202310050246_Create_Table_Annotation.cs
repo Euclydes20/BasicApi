@@ -16,7 +16,8 @@ namespace Api.Infra.Migrations
                 .WithColumn("Id").AsInt32().Identity().PrimaryKey()
                 .WithColumn("Title").AsString(100)
                 .WithColumn("Text").AsString()
-                .WithColumn("ChangeDate").AsDateTime()
+                .WithColumn("CreationDate").AsDateTime()
+                .WithColumn("LastChange").AsDateTime()
                 .WithColumn("UserId").AsInt32();
         }
     }
