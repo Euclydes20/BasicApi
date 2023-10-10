@@ -1,4 +1,5 @@
 ﻿using Api.Domain.Annotations;
+using Api.Domain.Secutiry;
 using Api.Domain.Users;
 using System.Linq.Expressions;
 
@@ -8,11 +9,13 @@ namespace Api.Services.Annotations
     {
         private readonly IAnnotationRepository _annotationRepository;
         private readonly IUserService _userService;
+        private readonly IClaimsRepository _claimsRepository;
 
-        public AnnotationService(IAnnotationRepository annotationRepository, IUserService userService)
+        public AnnotationService(IAnnotationRepository annotationRepository, IUserService userService, IClaimsRepository claimsRepository)
         {
             _annotationRepository = annotationRepository;
             _userService = userService;
+            _claimsRepository = claimsRepository;
         }
 
         private async Task Validate(Annotation annotation)
@@ -48,6 +51,7 @@ namespace Api.Services.Annotations
 
             annotation.CreationDate = DateTime.Now;
             annotation.LastChange = DateTime.Now;
+            annotation.UserId = _claimsRepository.UserId ?? 0;
 
             annotation.Validate();
             await Validate(annotation);
@@ -60,10 +64,12 @@ namespace Api.Services.Annotations
             if (annotation is null)
                 throw new ArgumentNullException(nameof(annotation), "Dados da anotação é inválido.");
 
-            if (!await ExistingAsync(a => a.Id != annotation.Id))
-                throw new ArgumentNullException("Anotação não localizada.");
+            var annotationSaved = await _annotationRepository.GetAsync(annotation.Id) 
+                ?? throw new ArgumentNullException("Anotação não localizada.");
 
+            annotation.CreationDate = DateTime.Now;
             annotation.LastChange = DateTime.Now;
+            annotation.UserId = annotationSaved.UserId;
 
             annotation.Validate();
             await Validate(annotation);
@@ -89,10 +95,15 @@ namespace Api.Services.Annotations
 
         public async Task<IEnumerable<Annotation>> GetAsync()
         {
+            var userId = _claimsRepository.UserId ?? 0;
+            var userSuper = _claimsRepository.UserSuper ?? false;
+            if (!userSuper && userId > 0)
+                return await GetByUserAsync(userId);
+
             var annotations = (await _annotationRepository.GetAsync())
                 .ToList();
 
-            await IncludeFKs(annotations as List<Annotation>);
+            await IncludeFKs(annotations);
 
             return annotations;
         }
@@ -107,6 +118,19 @@ namespace Api.Services.Annotations
             await IncludeFKs(annotation);
 
             return annotation;
+        }
+
+        public async Task<IEnumerable<Annotation>> GetByUserAsync(int userId)
+        {
+            if (userId <= 0)
+                throw new ArgumentException("O Id do usuário não foi informado.", nameof(userId));
+
+            var annotations = (await _annotationRepository.GetByUserAsync(userId))
+                .ToList();
+
+            await IncludeFKs(annotations);
+
+            return annotations;
         }
 
         public async Task<bool> ExistingAsync(Expression<Func<Annotation, bool>> func)

@@ -7,7 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Auxiliary\" />
     <Folder Include="Models\Annotations\" />
   </ItemGroup>
 

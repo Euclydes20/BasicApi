@@ -9,6 +9,7 @@ namespace Api.Domain.Annotations
         Task RemoveAsync(Annotation annotation);
         Task<IEnumerable<Annotation>> GetAsync();
         Task<Annotation?> GetAsync(int annotationId);
+        Task<IEnumerable<Annotation>> GetByUserAsync(int userId);
         Task<bool> ExistingAsync(Expression<Func<Annotation, bool>> func);
     }
 }

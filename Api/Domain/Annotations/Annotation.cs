@@ -1,7 +1,6 @@
 ﻿using Api.Domain.Users;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Text.Json.Serialization;
 
 namespace Api.Domain.Annotations
 {
@@ -15,7 +14,7 @@ namespace Api.Domain.Annotations
         public DateTime LastChange { get; set; }
         public int UserId { get; set; }
 
-        [NotMapped, JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        [NotMapped]
         public User User { get; set; }
 
         internal void Validate()

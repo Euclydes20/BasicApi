@@ -2,6 +2,7 @@
 using Api.Domain.Secutiry;
 using Api.Domain.Users;
 using Api.Infra.Database;
+using Api.Infra.Security;
 using Api.Repositories.Annotations;
 using Api.Repositories.Users;
 using Api.Services.Annotations;
@@ -24,6 +25,10 @@ namespace Api
 
             serviceDescriptors.AddTransient<IUserService, UserService>();
             serviceDescriptors.AddTransient<IUserRepository, UserRepository>();
+
+            serviceDescriptors.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
+
+            serviceDescriptors.AddTransient<IClaimsRepository, ClaimsRepository>();
 
             RegisterDbContext(serviceDescriptors);
             RegisterMigrationRunner(serviceDescriptors);

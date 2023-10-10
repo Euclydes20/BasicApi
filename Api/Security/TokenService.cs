@@ -30,7 +30,7 @@ namespace Api.Security
                     new Claim(ClaimTypes.NameIdentifier, user.Login ?? string.Empty),
                     new Claim(ClaimTypes.Name, user.Name ?? string.Empty),
                     new Claim(ClaimTypes.Role, user.Super.ToString()),
-                    new Claim("ProvisoryPassword", user.ProvisoryPassword.ToString()),
+                    new Claim(nameof(User.ProvisoryPassword), user.ProvisoryPassword.ToString()),
                     new Claim(ClaimTypes.Expiration, expires.ToString())
                 }),
                 NotBefore = DateTime.Now,

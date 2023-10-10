@@ -60,7 +60,7 @@ namespace Api.Repositories.Users
         public async Task<bool> ExistingAsync(Expression<Func<User, bool>> func)
         {
             return await dataContext.User.AsNoTracking()
-                    .AnyAsync(func);
+                .AnyAsync(func);
         }
     }
 }
