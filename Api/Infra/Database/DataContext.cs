@@ -25,7 +25,7 @@ namespace Api.Infra.Database
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.EnableSensitiveDataLogging(); //Mostra detalhes de conflitos
+            //optionsBuilder.EnableSensitiveDataLogging(); //Mostra detalhes de conflitos
 
             base.OnConfiguring(optionsBuilder);
         }

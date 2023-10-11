@@ -41,14 +41,19 @@ namespace Api
             switch (dbType)
             {
                 case DbType.SqlServer:
-                    serviceDescriptors.AddDbContext<DataContext>(options => options.UseSqlServer(connectionString));
+                    serviceDescriptors.AddDbContext<DataContext>(options => 
+                        options.UseSqlServer(connectionString)
+                            .EnableSensitiveDataLogging());
                     break;
 
                 case DbType.SAPHana:
                     throw new NotImplementedException();
 
                 case DbType.Postgres:
-                    serviceDescriptors.AddEntityFrameworkNpgsql().AddDbContext<DataContext>(options => options.UseNpgsql(connectionString));
+                    serviceDescriptors.AddEntityFrameworkNpgsql()
+                        .AddDbContext<DataContext>(options => 
+                            options.UseNpgsql(connectionString)
+                                .EnableSensitiveDataLogging());
                     break;
             }
         }
