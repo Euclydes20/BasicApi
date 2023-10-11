@@ -18,6 +18,7 @@ namespace Api.Controllers.Users
             _userService = userService;
         }
 
+        [AllowAnonymous]
         [HttpPost]
         [Route("")]
         public async Task<IActionResult> AddAsync(User user)
