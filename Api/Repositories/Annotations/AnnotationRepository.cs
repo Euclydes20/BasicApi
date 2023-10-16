@@ -1,4 +1,5 @@
 ﻿using Api.Domain.Annotations;
+using Api.Domain.Users;
 using Api.Infra.Database;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
@@ -42,6 +43,17 @@ namespace Api.Repositories.Annotations
         {
             return await dataContext.Annotation.AsNoTracking()
                 .ToListAsync();
+            // ANALISE E ESTUDO DE PERFORMANCE DO JOIN
+            /*return (await dataContext.Annotation.AsNoTracking()
+                .Join(dataContext.User, a => a.UserId, u => u.Id, (a, u) => new
+                {
+                    Annotation = a,
+                    User = u
+                }).ToListAsync()).Select(au =>
+                {
+                    au.Annotation.User = au.User;
+                    return au.Annotation;
+                }).ToList();*/
         }
 
         public async Task<Annotation?> GetAsync(int annotationId)
