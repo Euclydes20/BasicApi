@@ -38,7 +38,7 @@ namespace Api.Repositories.Annotations
             await dataContext.SaveChangesAsync();
         }
 
-        public async Task<IEnumerable<Annotation>> GetAsync()
+        public async Task<IList<Annotation>> GetAsync()
         {
             return await dataContext.Annotation.AsNoTracking()
                 .ToListAsync();
@@ -50,7 +50,7 @@ namespace Api.Repositories.Annotations
                 .FirstOrDefaultAsync(a => a.Id == annotationId);
         }
 
-        public async Task<IEnumerable<Annotation>> GetByUserAsync(int userId)
+        public async Task<IList<Annotation>> GetByUserAsync(int userId)
         {
             return await dataContext.Annotation.AsNoTracking()
                .Where(a => a.UserId == userId)

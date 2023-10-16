@@ -39,7 +39,7 @@ namespace Api.Repositories.Users
             await dataContext.SaveChangesAsync();
         }
 
-        public async Task<IEnumerable<User>> GetAsync()
+        public async Task<IList<User>> GetAsync()
         {
             return await dataContext.User.AsNoTracking()
                 .ToListAsync();

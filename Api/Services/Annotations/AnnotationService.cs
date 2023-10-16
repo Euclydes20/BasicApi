@@ -93,7 +93,7 @@ namespace Api.Services.Annotations
             await _annotationRepository.RemoveAsync(annotation);
         }
 
-        public async Task<IEnumerable<Annotation>> GetAsync()
+        public async Task<IList<Annotation>> GetAsync()
         {
             var userId = _claimsRepository.UserId ?? 0;
             var userSuper = _claimsRepository.UserSuper ?? false;
@@ -120,7 +120,7 @@ namespace Api.Services.Annotations
             return annotation;
         }
 
-        public async Task<IEnumerable<Annotation>> GetByUserAsync(int userId)
+        public async Task<IList<Annotation>> GetByUserAsync(int userId)
         {
             if (userId <= 0)
                 throw new ArgumentException("O Id do usuário não foi informado.", nameof(userId));

@@ -91,7 +91,7 @@ namespace Api.Controllers.Users
         [Route("")]
         public async Task<IActionResult> GetAsync()
         {
-            var response = new ResponseInfo<IEnumerable<User>>();
+            var response = new ResponseInfo<IList<User>>();
             try
             {
                 var users = (await _userService.GetAsync()).ToList();

@@ -72,7 +72,7 @@ namespace Api.Services.Users
             await _userRepository.RemoveAsync(user);
         }
 
-        public async Task<IEnumerable<User>> GetAsync()
+        public async Task<IList<User>> GetAsync()
         {
             return await _userRepository.GetAsync();
         }

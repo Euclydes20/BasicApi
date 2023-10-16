@@ -8,7 +8,7 @@ namespace Api.Domain.Users
         Task<User> UpdateAsync(User user);
         Task RemoveAsync(int userId);
         Task RemoveAsync(User user);
-        Task<IEnumerable<User>> GetAsync();
+        Task<IList<User>> GetAsync();
         Task<User?> GetAsync(int id);
         Task<User?> GetByLoginAsync(string login);
         Task UpdateLastLoginAsync(int userId);

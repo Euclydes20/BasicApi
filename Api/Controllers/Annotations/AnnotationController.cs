@@ -81,7 +81,7 @@ namespace Api.Controllers.Annotations
         [Route("")]
         public async Task<IActionResult> GetAsync()
         {
-            var response = new ResponseInfo<IEnumerable<Annotation>>();
+            var response = new ResponseInfo<IList<Annotation>>();
             try
             {
                 response.Data = await _annotationService.GetAsync();
