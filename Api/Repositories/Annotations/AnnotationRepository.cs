@@ -16,7 +16,7 @@ namespace Api.Repositories.Annotations
 
         public async Task<Annotation> AddAsync(Annotation annotation)
         {
-            await dataContext.AddAsync(annotation);
+            await dataContext.Annotation.AddAsync(annotation);
 
             await dataContext.SaveChangesAsync();
 
@@ -25,7 +25,7 @@ namespace Api.Repositories.Annotations
 
         public async Task<Annotation> UpdateAsync(Annotation annotation)
         {
-            dataContext.Update(annotation);
+            dataContext.Annotation.Update(annotation);
 
             await dataContext.SaveChangesAsync();
 
@@ -34,7 +34,7 @@ namespace Api.Repositories.Annotations
 
         public async Task RemoveAsync(Annotation annotation)
         {
-            dataContext.Remove(annotation);
+            dataContext.Annotation.Remove(annotation);
             await dataContext.SaveChangesAsync();
         }
 
