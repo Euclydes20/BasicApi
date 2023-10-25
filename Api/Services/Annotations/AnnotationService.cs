@@ -77,20 +77,20 @@ namespace Api.Services.Annotations
             return await _annotationRepository.UpdateAsync(annotation);
         }
 
-        public async Task RemoveAsync(int annotationId)
+        public async Task DeleteAsync(int annotationId)
         {
             if (annotationId <= 0)
                 throw new ArgumentException("O Id da anotação não foi informado.", nameof(annotationId));
 
-            await RemoveAsync(await GetAsync(annotationId));
+            await DeleteAsync(await GetAsync(annotationId));
         }
         
-        public async Task RemoveAsync(Annotation annotation)
+        public async Task DeleteAsync(Annotation annotation)
         {
             if (annotation is null)
                 throw new ArgumentNullException("Anotação não localizada.");
 
-            await _annotationRepository.RemoveAsync(annotation);
+            await _annotationRepository.DeleteAsync(annotation);
         }
 
         public async Task<IList<Annotation>> GetAsync()

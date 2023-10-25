@@ -6,8 +6,8 @@ namespace Api.Domain.Annotations
     {
         Task<Annotation> AddAsync(Annotation annotation);
         Task<Annotation> UpdateAsync(Annotation annotation);
-        Task RemoveAsync(int annotationId);
-        Task RemoveAsync(Annotation annotation);
+        Task DeleteAsync(int annotationId);
+        Task DeleteAsync(Annotation annotation);
         Task<IList<Annotation>> GetAsync();
         Task<Annotation?> GetAsync(int annotationId);
         Task<IList<Annotation>> GetByUserAsync(int userId);

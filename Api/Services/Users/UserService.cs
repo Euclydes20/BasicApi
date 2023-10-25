@@ -53,15 +53,15 @@ namespace Api.Services.Users
             return await _userRepository.UpdateAsync(user);
         }
 
-        public async Task RemoveAsync(int userId)
+        public async Task DeleteAsync(int userId)
         {
             if (userId <= 0)
                 throw new ArgumentException("O Id do usuário não foi informado.", nameof(userId));
 
-            await RemoveAsync(await GetAsync(userId));
+            await DeleteAsync(await GetAsync(userId));
         }
 
-        public async Task RemoveAsync(User user)
+        public async Task DeleteAsync(User user)
         {
             if (user is null)
                 throw new ArgumentNullException(nameof(user), "Usuário não localizado.");
@@ -69,7 +69,7 @@ namespace Api.Services.Users
             if (user.Super)
                 throw new Exception("Este usuário não pode ser removido.");
 
-            await _userRepository.RemoveAsync(user);
+            await _userRepository.DeleteAsync(user);
         }
 
         public async Task<IList<User>> GetAsync()

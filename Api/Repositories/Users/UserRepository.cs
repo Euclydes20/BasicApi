@@ -32,7 +32,7 @@ namespace Api.Repositories.Users
             return user;
         }
 
-        public async Task RemoveAsync(User user)
+        public async Task DeleteAsync(User user)
         {
             dataContext.User.Remove(user);
 
