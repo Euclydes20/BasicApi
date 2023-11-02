@@ -1,4 +1,5 @@
 ﻿using Api.Domain.Annotations;
+using Api.Domain.UserAuthorizations;
 using Api.Domain.Users;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
@@ -27,7 +28,7 @@ namespace Api.Infra.Database
         {
             //optionsBuilder.EnableSensitiveDataLogging(); //Mostra detalhes de conflitos
 
-            base.OnConfiguring(optionsBuilder);
+            //base.OnConfiguring(optionsBuilder);
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -37,5 +38,6 @@ namespace Api.Infra.Database
 
         public DbSet<Annotation> Annotation { get; set; }
         public DbSet<User> User { get; set; }
+        public DbSet<UserAuthorization> UserAuthorization { get; set; }
     }
 }

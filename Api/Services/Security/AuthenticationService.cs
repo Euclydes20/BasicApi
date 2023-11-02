@@ -19,10 +19,10 @@ namespace Api.Services.Security
             if (authentication is null)
                 throw new ArgumentNullException(nameof(authentication), "Solicitação de login inválida.");
 
-            if (authentication is null)
+            if (authentication.Login is null)
                 throw new ArgumentNullException(nameof(authentication.Login), "Login inválido.");
 
-            if (authentication is null)
+            if (authentication.Password is null)
                 throw new ArgumentNullException(nameof(authentication.Password), "Senha inválida.");
 
             try
@@ -40,6 +40,9 @@ namespace Api.Services.Security
 
             if (authentication.Password.Hash() != user.Password)
                 throw new Exception("Credenciais inválidas.");
+
+            if (user.Blocked)
+                throw new Exception("Usuário bloqueado.");
 
             var tokenInfo = TokenService.GenerateToken(user)
                 ?? throw new Exception("Token inválido.");

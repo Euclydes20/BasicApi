@@ -10,6 +10,6 @@ namespace Api.Domain.Annotations
         Task<IList<Annotation>> GetAsync();
         Task<Annotation?> GetAsync(int annotationId);
         Task<IList<Annotation>> GetByUserAsync(int userId);
-        Task<bool> ExistingAsync(Expression<Func<Annotation, bool>> func);
+        Task<bool> ExistsAsync(Expression<Func<Annotation, bool>> func);
     }
 }

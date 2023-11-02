@@ -7,59 +7,59 @@ namespace Api.Repositories.Users
 {
     public class UserRepository : IUserRepository
     {
-        private readonly DataContext dataContext;
+        private readonly DataContext _dataContext;
 
         public UserRepository(DataContext dataContext)
         {
-            this.dataContext = dataContext;
+            this._dataContext = dataContext;
         }
 
         public async Task<User> AddAsync(User user)
         {
-            await dataContext.User.AddAsync(user);
+            await _dataContext.User.AddAsync(user);
 
-            await dataContext.SaveChangesAsync();
+            await _dataContext.SaveChangesAsync();
 
             return user;
         }
 
         public async Task<User> UpdateAsync(User user)
         {
-            dataContext.User.Update(user);
+            _dataContext.User.Update(user);
 
-            await dataContext.SaveChangesAsync();
+            await _dataContext.SaveChangesAsync();
 
             return user;
         }
 
         public async Task DeleteAsync(User user)
         {
-            dataContext.User.Remove(user);
+            _dataContext.User.Remove(user);
 
-            await dataContext.SaveChangesAsync();
+            await _dataContext.SaveChangesAsync();
         }
 
         public async Task<IList<User>> GetAsync()
         {
-            return await dataContext.User.AsNoTracking()
+            return await _dataContext.User.AsNoTracking()
                 .ToListAsync();
         }
 
         public async Task<User?> GetAsync(int userId)
         {
-            return await dataContext.User.AsNoTracking()
+            return await _dataContext.User.AsNoTracking()
                 .FirstOrDefaultAsync(u => u.Id == userId);
         }
 
         public async Task<User?> GetByLoginAsync(string login)
         {
-            return await dataContext.User.AsNoTracking()
-                .FirstOrDefaultAsync(u => u.Login.ToLower() == login.ToLower());
+            return await _dataContext.User.AsNoTracking()
+                .FirstOrDefaultAsync(u => u.Login!.ToLower() == login.ToLower());
         }
 
-        public async Task<bool> ExistingAsync(Expression<Func<User, bool>> func)
+        public async Task<bool> ExistsAsync(Expression<Func<User, bool>> func)
         {
-            return await dataContext.User.AsNoTracking()
+            return await _dataContext.User.AsNoTracking()
                 .AnyAsync(func);
         }
     }

@@ -1,16 +1,21 @@
-﻿using Api.Domain.Annotations;
+﻿using Api.Domain;
+using Api.Domain.Annotations;
 using Api.Domain.Secutiry;
+using Api.Domain.UserAuthorizations;
 using Api.Domain.Users;
 using Api.Infra.Database;
 using Api.Infra.Security;
 using Api.Repositories.Annotations;
+using Api.Repositories.UserAuthorizations;
 using Api.Repositories.Users;
+using Api.Security;
+using Api.Services;
 using Api.Services.Annotations;
 using Api.Services.Security;
+using Api.Services.UserAuthorizations;
 using Api.Services.Users;
 using FluentMigrator.Runner;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Api
 {
@@ -26,9 +31,15 @@ namespace Api
             serviceDescriptors.AddTransient<IUserService, UserService>();
             serviceDescriptors.AddTransient<IUserRepository, UserRepository>();
 
-            serviceDescriptors.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
+            serviceDescriptors.AddHttpContextAccessor();
+            //serviceDescriptors.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
 
             serviceDescriptors.AddTransient<IClaimsRepository, ClaimsRepository>();
+
+            serviceDescriptors.AddTransient<IUserAuthorizationService, UserAuthorizationService>();
+            serviceDescriptors.AddTransient<IUserAuthorizationRepository, UserAuthorizationRepository>();
+
+            serviceDescriptors.AddTransient<ISharedService, SharedService>();
 
             RegisterDbContext(serviceDescriptors);
             RegisterMigrationRunner(serviceDescriptors);

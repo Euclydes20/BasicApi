@@ -1,16 +1,20 @@
-﻿using Api.Domain.Users;
+﻿using Api.Domain.UserAuthorizations;
+using Api.Domain.Users;
 using Api.Security;
 using System.Linq.Expressions;
+using System.Transactions;
 
 namespace Api.Services.Users
 {
     public class UserService : IUserService
     {
         private readonly IUserRepository _userRepository;
+        private readonly IUserAuthorizationService _userAuthorizationService;
 
-        public UserService(IUserRepository userRepository)
+        public UserService(IUserRepository userRepository, IUserAuthorizationService userAuthorizationService)
         {
             _userRepository = userRepository;
+            _userAuthorizationService = userAuthorizationService;
         }
 
         public async Task<User> AddAsync(User user)
@@ -18,17 +22,26 @@ namespace Api.Services.Users
             if (user is null)
                 throw new ArgumentNullException(nameof(user), "Dados do usuário é inválido.");
 
+            user.Id = 0;
             user.CreationDate = DateTime.Now;
             user.Validate();
 
-            if (await ExistingAsync(u => u.Login == user.Login))
+            if (await ExistsAsync(u => u.Login == user.Login))
                 throw new Exception("Login já utilizado.");
 
             user.ProvisoryPassword = true;
-            user.Password = user.Password.Hash();
+            user.Password = user.Password?.Hash() ?? string.Empty;
             user.Blocked = false;
 
-            return await _userRepository.AddAsync(user);
+            using (var transation = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+            {
+                user = await _userRepository.AddAsync(user);
+                await _userAuthorizationService.AddToNewUserAsync(user.Id);
+
+                transation.Complete();
+            }
+
+            return user;
         }
 
         public async Task<User> UpdateAsync(User user)
@@ -47,7 +60,7 @@ namespace Api.Services.Users
             user.Password = userSaved.Password;
             user.Validate();
 
-            if (await ExistingAsync(u => u.Id != user.Id && u.Login == user.Login))
+            if (await ExistsAsync(u => u.Id != user.Id && u.Login == user.Login))
                 throw new Exception("Login já utilizado.");
 
             return await _userRepository.UpdateAsync(user);
@@ -115,9 +128,9 @@ namespace Api.Services.Users
             await _userRepository.UpdateAsync(userSaved);
         }
 
-        public async Task<bool> ExistingAsync(Expression<Func<User, bool>> func)
+        public async Task<bool> ExistsAsync(Expression<Func<User, bool>> func)
         {
-            return await _userRepository.ExistingAsync(func);
+            return await _userRepository.ExistsAsync(func);
         }
     }
 }

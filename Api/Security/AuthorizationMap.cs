@@ -32,6 +32,9 @@ namespace Api.Security
             new AuthorizationBase(AuthorizationGroup.Annotation, AuthorizationType.AnnotationEdit, "Edit Annotation", "Define if is allowed edit a annotation."),
             new AuthorizationBase(AuthorizationGroup.Annotation, AuthorizationType.AnnotationDelete, "Delete Annotation", "Define if is allowed delete a annotation."),
             new AuthorizationBase(AuthorizationGroup.Annotation, AuthorizationType.AnnotationView, "View Annotation", "Define if is allowed view a annotation."),
+
+            new AuthorizationBase(AuthorizationGroup.UserAuthorization, AuthorizationType.UserAuthorizationEdit, "Edit User Authorization", "Define if is allowed edit a user authorization."),
+            new AuthorizationBase(AuthorizationGroup.UserAuthorization, AuthorizationType.UserAuthorizationView, "View User Authorization", "Define if is allowed view a user authorization."),
         };
 
         public static IReadOnlyCollection<AuthorizationBase> AuthorizationList => _authorizationList.AsReadOnly();
@@ -41,6 +44,7 @@ namespace Api.Security
     {
         User = 1,
         Annotation,
+        UserAuthorization,
     }
 
     public enum AuthorizationType
@@ -53,6 +57,15 @@ namespace Api.Security
         AnnotationCreate,
         AnnotationEdit,
         AnnotationDelete,
-        AnnotationView
+        AnnotationView,
+
+        UserAuthorizationEdit,
+        UserAuthorizationView,
+    }
+
+    public enum AuthorizationCondition
+    {
+        NotAuthorized = 0,
+        Authorized,
     }
 }

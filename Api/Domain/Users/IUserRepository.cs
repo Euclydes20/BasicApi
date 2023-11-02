@@ -10,6 +10,6 @@ namespace Api.Domain.Users
         Task<IList<User>> GetAsync();
         Task<User?> GetAsync(int userId);
         Task<User?> GetByLoginAsync(string login);
-        Task<bool> ExistingAsync(Expression<Func<User, bool>> func);
+        Task<bool> ExistsAsync(Expression<Func<User, bool>> func);
     }
 }

@@ -13,7 +13,7 @@ namespace Api.Auxiliary
         public static object To(this object value, Type conversionType)
         {
             if (conversionType == null)
-                throw new ArgumentNullException("conversionType");
+                throw new ArgumentNullException(nameof(conversionType));
 
             // CAUSA ERRO QUANDO O TIPO NÃO É NULLABLE
             /*if (string.IsNullOrEmpty(value.ToString()))
@@ -22,24 +22,24 @@ namespace Api.Auxiliary
             if (string.IsNullOrEmpty(value.ToString()))
             {
                 if (conversionType.IsGenericType && conversionType.GetGenericTypeDefinition().Equals(typeof(Nullable<>)))
-                    return null;
+                    return null!;
 
                 if (Extensions.IsNumericType(conversionType))
-                    value = Activator.CreateInstance(conversionType);
+                    value = Activator.CreateInstance(conversionType)!;
             }
 
             if (conversionType.IsGenericType && conversionType.GetGenericTypeDefinition().Equals(typeof(Nullable<>)))
             {
-                if (value == null)
-                    return null;
+                if (value is null)
+                    return null!;
                 else if (value == DBNull.Value)
-                    return null;
+                    return null!;
                 NullableConverter nullableConverter = new NullableConverter(conversionType);
                 conversionType = nullableConverter.UnderlyingType;
             }
             else if (conversionType == typeof(Guid))
             {
-                return new Guid(value.ToString());
+                return new Guid(value.ToString()!);
             }
             else if (conversionType == typeof(DateTime))
             {
@@ -59,7 +59,7 @@ namespace Api.Auxiliary
             }
             else if (conversionType == typeof(TimeSpan) && value.GetType() == typeof(string))
             {
-                return TimeSpan.Parse(value.ToString());
+                return TimeSpan.Parse(value.ToString()!);
             }
             else if (conversionType == typeof(Int64) && value.GetType() == typeof(int))
             {
@@ -80,21 +80,21 @@ namespace Api.Auxiliary
             }
             else if (value is string && conversionType == typeof(bool))
             {
-                if (value.ToString().ToLower() == "true")
+                if (value.ToString()!.ToLower() == "true")
                     value = true;
-                else if (value.ToString().ToLower() == "false")
+                else if (value.ToString()!.ToLower() == "false")
                     value = false;
                 else
                     throw new InvalidOperationException("Não foi possível converter texto para booleano.");
             }
 
-            return Convert.ChangeType(value, conversionType);
+            return Convert.ChangeType(value, conversionType)!;
         }
 
         static object ChangeType(Type t, object value)
         {
             TypeConverter tc = TypeDescriptor.GetConverter(t);
-            return tc.ConvertFrom(value);
+            return tc.ConvertFrom(value)!;
         }
 
         public static Dictionary<string, int> EnumToDicionary<T>()
@@ -102,7 +102,7 @@ namespace Api.Auxiliary
             if (typeof(T).BaseType != typeof(Enum))
                 return new Dictionary<string, int>();
 
-            return Enum.GetValues(typeof(T)).Cast<int>().ToDictionary(currentEnum => Enum.GetName(typeof(T), currentEnum));
+            return Enum.GetValues(typeof(T)).Cast<int>().ToDictionary(currentEnum => Enum.GetName(typeof(T), currentEnum)!);
         }
     }
 }

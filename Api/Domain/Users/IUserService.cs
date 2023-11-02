@@ -13,6 +13,6 @@ namespace Api.Domain.Users
         Task<User?> GetByLoginAsync(string login);
         Task UpdateLastLoginAsync(int userId);
         Task UpdateLastLoginAsync(User user);
-        Task<bool> ExistingAsync(Expression<Func<User, bool>> func);
+        Task<bool> ExistsAsync(Expression<Func<User, bool>> func);
     }
 }

@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Api.Domain.Annotations
 {
-    public class Annotation
+    public sealed class Annotation
     {
         [Key]
         public int Id { get; set; }

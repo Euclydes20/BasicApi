@@ -2,10 +2,10 @@
 
 namespace Api.Models.Security
 {
-    public class Authentication
+    public sealed class Authentication
     {
-        public string Login { get; set; }
-        public string Password { get; set; }
+        public string? Login { get; set; }
+        public string? Password { get; set; }
         public bool EncryptedPassword { get; set; } = true;
     }
 }

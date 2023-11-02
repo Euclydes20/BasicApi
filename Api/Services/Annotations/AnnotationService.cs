@@ -23,7 +23,7 @@ namespace Api.Services.Annotations
             if (annotation is null)
                 throw new ArgumentNullException(nameof(annotation), "Dados da anotação é inválido.");
 
-            if (!await _userService.ExistingAsync(u => u.Id == annotation.UserId))
+            if (!await _userService.ExistsAsync(u => u.Id == annotation.UserId))
                 throw new Exception("Usuário (Autor) não localizado.");
         }
 
@@ -133,9 +133,9 @@ namespace Api.Services.Annotations
             return annotations;
         }
 
-        public async Task<bool> ExistingAsync(Expression<Func<Annotation, bool>> func)
+        public async Task<bool> ExistsAsync(Expression<Func<Annotation, bool>> func)
         {
-            return await _annotationRepository.ExistingAsync(func);
+            return await _annotationRepository.ExistsAsync(func);
         }
     }
 }
