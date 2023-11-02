@@ -13,7 +13,7 @@
       "dotnetRunMessages": true,
       "launchBrowser": true,
       "launchUrl": "documentation",
-      "applicationUrl": "http://localhost:7025;http://192.168.31.43:7026",
+      "applicationUrl": "http://localhost:7025;",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
@@ -24,6 +24,26 @@
       "launchBrowser": true,
       "launchUrl": "documentation",
       "applicationUrl": "https://localhost:7025",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    },
+    "Api_Lan": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "launchBrowser": true,
+      "launchUrl": "documentation",
+      "applicationUrl": "http://localhost:7025;http://192.168.31.43:7026",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    },
+    "Api_Https_Lan": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "launchBrowser": true,
+      "launchUrl": "documentation",
+      "applicationUrl": "https://localhost:7025;https://192.168.31.43:7026",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }

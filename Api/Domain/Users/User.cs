@@ -5,10 +5,10 @@ namespace Api.Domain.Users
     public class User
     {
         public int Id { get; set; }
-        public string Name { get; set; }
-        public string Login { get; set; }
-        public string Password { get; set; }
-        public string Bibliography { get; set; }
+        public string? Name { get; set; }
+        public string? Login { get; set; }
+        public string? Password { get; set; }
+        public string? Bibliography { get; set; }
         public bool Super { get; set; }
         public bool ProvisoryPassword { get; set; }
         public DateTime CreationDate { get; set; }
@@ -43,6 +43,11 @@ namespace Api.Domain.Users
 
             if (LastLogin <= DateTime.MinValue)
                 throw new ArgumentNullException(nameof(LastLogin), "Data de último login é inválida.");
+        }
+
+        internal void ClearPassword(bool maskPassword = false)
+        {
+            Password = maskPassword ? "********" : null;
         }
     }
 }

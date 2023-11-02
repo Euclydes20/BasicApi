@@ -1,5 +1,6 @@
 using Api;
 using Api.Infra.Database;
+using Api.Security;
 using FluentMigrator.Runner;
 using Microsoft.AspNetCore.Rewrite;
 
@@ -73,6 +74,7 @@ app.UseRewriter(rewriteOptions);
 
 //app.UseSession();
 app.UseAuthentication();
+app.UseMiddleware<AuthorizationMiddleware>();
 
 app.UseEndpoints(endpoints =>
 {

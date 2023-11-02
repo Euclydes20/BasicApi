@@ -1,5 +1,6 @@
 ﻿using Api.Domain.Users;
 using Api.Models;
+using Api.Security;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -43,6 +44,7 @@ namespace Api.Controllers.Users
             }
         }
 
+        [Authorization(AuthorizationType.UserEdit)]
         [HttpPut]
         [Route("")]
         public async Task<IActionResult> UpdateAsync(User user)
@@ -67,6 +69,7 @@ namespace Api.Controllers.Users
             }
         }
 
+        [Authorization(AuthorizationType.UserDelete)]
         [HttpDelete]
         [Route("{id}")]
         public async Task<IActionResult> RemoveAsync(int id)
@@ -87,6 +90,7 @@ namespace Api.Controllers.Users
             }
         }
 
+        [Authorization(AuthorizationType.UserView)]
         [HttpGet]
         [Route("")]
         public async Task<IActionResult> GetAsync()
@@ -95,7 +99,7 @@ namespace Api.Controllers.Users
             try
             {
                 var users = (await _userService.GetAsync()).ToList();
-                users.ForEach(u => u.Password = null);
+                users.ForEach(u => u.ClearPassword());
 
                 response.Data = users;
 
@@ -110,6 +114,7 @@ namespace Api.Controllers.Users
             }
         }
 
+        [Authorization(AuthorizationType.UserView)]
         [HttpGet]
         [Route("{id}")]
         public async Task<IActionResult> GetAsync(int id)
@@ -118,8 +123,7 @@ namespace Api.Controllers.Users
             try
             {
                 var user = await _userService.GetAsync(id);
-                if (user is not null)
-                    user.Password = null;
+                user?.ClearPassword();
 
                 response.Data = user;
 
