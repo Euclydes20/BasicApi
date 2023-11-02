@@ -6,8 +6,8 @@ namespace Api.Domain.Users
     {
         Task<User> AddAsync(User user);
         Task<User> UpdateAsync(User user);
-        Task RemoveAsync(int userId);
-        Task RemoveAsync(User user);
+        Task DeleteAsync(int userId);
+        Task DeleteAsync(User user);
         Task<IList<User>> GetAsync();
         Task<User?> GetAsync(int id);
         Task<User?> GetByLoginAsync(string login);

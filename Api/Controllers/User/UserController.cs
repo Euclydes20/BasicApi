@@ -72,12 +72,12 @@ namespace Api.Controllers.Users
         [Authorization(AuthorizationType.UserDelete)]
         [HttpDelete]
         [Route("{id}")]
-        public async Task<IActionResult> RemoveAsync(int id)
+        public async Task<IActionResult> DeleteAsync(int id)
         {
             var response = new ResponseInfo<object>();
             try
             {
-                await _userService.RemoveAsync(id);
+                await _userService.DeleteAsync(id);
 
                 return Ok(response);
             }

@@ -60,12 +60,12 @@ namespace Api.Controllers.Annotations
 
         [HttpDelete]
         [Route("{id}")]
-        public async Task<IActionResult> RemoveAsync(int id)
+        public async Task<IActionResult> DeleteAsync(int id)
         {
             var response = new ResponseInfo<Annotation>();
             try
             {
-                await _annotationService.RemoveAsync(id);
+                await _annotationService.DeleteAsync(id);
                 return Ok(response);
             }
             catch (Exception ex)

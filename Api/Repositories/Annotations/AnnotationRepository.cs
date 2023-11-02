@@ -33,7 +33,7 @@ namespace Api.Repositories.Annotations
             return annotation;
         }
 
-        public async Task RemoveAsync(Annotation annotation)
+        public async Task DeleteAsync(Annotation annotation)
         {
             dataContext.Annotation.Remove(annotation);
             await dataContext.SaveChangesAsync();
