@@ -1,4 +1,5 @@
 ﻿using Api.Domain.Annotations;
+using Api.Domain.Tests;
 using Api.Domain.UserAuthorizations;
 using Api.Domain.Users;
 using Microsoft.EntityFrameworkCore;
@@ -33,6 +34,8 @@ namespace Api.Infra.Database
         {
             base.OnModelCreating(modelBuilder);
         }
+
+        public DbSet<Test> Test { get; set; }
 
         public DbSet<Annotation> Annotation { get; set; }
         public DbSet<User> User { get; set; }

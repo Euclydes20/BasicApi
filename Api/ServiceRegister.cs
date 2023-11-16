@@ -1,19 +1,23 @@
 ﻿using Api.Domain;
 using Api.Domain.Annotations;
 using Api.Domain.Secutiry;
+using Api.Domain.Tests;
 using Api.Domain.UserAuthorizations;
 using Api.Domain.Users;
 using Api.Infra.Database;
 using Api.Infra.Security;
 using Api.Repositories.Annotations;
+using Api.Repositories.Tests;
 using Api.Repositories.UserAuthorizations;
 using Api.Repositories.Users;
 using Api.Services;
 using Api.Services.Annotations;
 using Api.Services.Security;
+using Api.Services.Tests;
 using Api.Services.UserAuthorizations;
 using Api.Services.Users;
 using FluentMigrator.Runner;
+using LinqToDB;
 using Microsoft.EntityFrameworkCore;
 
 namespace Api
@@ -40,6 +44,9 @@ namespace Api
 
             serviceDescriptors.AddTransient<ISharedService, SharedService>();
 
+            serviceDescriptors.AddTransient<ITestService, TestService>();
+            serviceDescriptors.AddTransient<ITestRepository, TestRepository>();
+
             RegisterDbContext(serviceDescriptors);
             RegisterMigrationRunner(serviceDescriptors);
         }
@@ -51,19 +58,25 @@ namespace Api
             switch (dbType)
             {
                 case DbType.SqlServer:
-                    serviceDescriptors.AddDbContext<DataContext>(options => 
+                    serviceDescriptors.AddDbContext<Infra.Database.DataContext>(options => 
                         options.UseSqlServer(connectionString)
                             .EnableSensitiveDataLogging());
+                    serviceDescriptors.AddTransient(s =>
+                        new DataContextLQ(ProviderName.SqlServer2022, connectionString));
                     break;
 
                 case DbType.SAPHana:
+                    serviceDescriptors.AddTransient(s =>
+                        new DataContextLQ(ProviderName.SapHana, connectionString));
                     throw new NotImplementedException();
 
                 case DbType.Postgres:
                     serviceDescriptors/*.AddEntityFrameworkNpgsql()*/
-                        .AddDbContext<DataContext>(options => 
+                        .AddDbContext<Infra.Database.DataContext>(options => 
                             options.UseNpgsql(connectionString)
                                 .EnableSensitiveDataLogging());
+                    serviceDescriptors.AddTransient(s => 
+                        new DataContextLQ(ProviderName.PostgreSQL15, connectionString));
                     break;
             }
         }

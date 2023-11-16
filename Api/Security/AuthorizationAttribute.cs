@@ -11,5 +11,10 @@
             this.Authorization = authorization;
             this.OnlySuperUser = onlySuperUser;
         }
+
+        public AuthorizationAttribute(bool onlySuperUser)
+        {
+            this.OnlySuperUser = onlySuperUser;
+        }
     }
 }
