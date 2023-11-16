@@ -13,5 +13,15 @@
             }
             private set { }
         }
+
+        private DateTime OperationRequestDate { get; set; } = DateTime.Now;
+        public double OperationMilliseconds
+        {
+            get
+            {
+                return (DateTime.Now - OperationRequestDate).TotalMilliseconds;
+            }
+            private set { }
+        }
     }
 }

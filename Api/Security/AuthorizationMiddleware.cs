@@ -1,5 +1,6 @@
 ﻿using Api.Auxiliary;
 using Api.Domain.UserAuthorizations;
+using Microsoft.AspNetCore.Authorization;
 using System.Net;
 using System.Security.Claims;
 
@@ -16,9 +17,17 @@ namespace Api.Security
 
         public async Task Invoke(HttpContext httpContext, IUserAuthorizationService userAuthorizationService)
         {
+            bool isAllowAnonymousAttribute = httpContext.GetEndpoint()
+                ?.Metadata?.Any(o => o is AllowAnonymousAttribute) ?? false;
+
+            if (isAllowAnonymousAttribute)
+            {
+                await _requestEndpoint(httpContext);
+                return;
+            }
+
             AuthorizationAttribute? authorizationAttribute = httpContext.GetEndpoint()
-                ?.Metadata
-                ?.FirstOrDefault(o => o is AuthorizationAttribute) as AuthorizationAttribute;
+                ?.Metadata?.FirstOrDefault(o => o is AuthorizationAttribute) as AuthorizationAttribute;
 
             if (authorizationAttribute is null || (!authorizationAttribute.Authorization.HasValue && !authorizationAttribute.OnlySuperUser))
             {

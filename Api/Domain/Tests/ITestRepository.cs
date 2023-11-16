@@ -2,6 +2,8 @@
 {
     public interface ITestRepository
     {
+        Task<int> DeleteAllWithEFAsync();
+        Task<int> DeleteAllWithLQAsync();
         Task<Test> AddWithEFAsync(Test test);
         Task DeleteWithEFAsync(int testId);
         Task<Test> AddWithLQAsync(Test test);

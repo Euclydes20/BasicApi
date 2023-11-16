@@ -7,44 +7,44 @@ namespace Api.Repositories.Annotations
 {
     public class AnnotationRepository : IAnnotationRepository
     {
-        private readonly DataContext _dataContext;
+        private readonly DataContextEF _dataContextEF;
 
-        public AnnotationRepository(DataContext dataContext)
+        public AnnotationRepository(DataContextEF dataContext)
         {
-            this._dataContext = dataContext;
+            this._dataContextEF = dataContext;
         }
 
         public async Task<Annotation> AddAsync(Annotation annotation)
         {
-            await _dataContext.Annotation.AddAsync(annotation);
+            await _dataContextEF.Annotation.AddAsync(annotation);
 
-            await _dataContext.SaveChangesAsync();
+            await _dataContextEF.SaveChangesAsync();
 
             return annotation;
         }
 
         public async Task<Annotation> UpdateAsync(Annotation annotation)
         {
-            _dataContext.Annotation.Update(annotation);
+            _dataContextEF.Annotation.Update(annotation);
 
-            await _dataContext.SaveChangesAsync();
+            await _dataContextEF.SaveChangesAsync();
 
             return annotation;
         }
 
         public async Task DeleteAsync(Annotation annotation)
         {
-            _dataContext.Annotation.Remove(annotation);
-            await _dataContext.SaveChangesAsync();
+            _dataContextEF.Annotation.Remove(annotation);
+            await _dataContextEF.SaveChangesAsync();
         }
 
         public async Task<IList<Annotation>> GetAsync()
         {
-            return await _dataContext.Annotation.AsNoTracking()
+            return await _dataContextEF.Annotation.AsNoTracking()
                 .ToListAsync();
             // ANALISE E ESTUDO DE PERFORMANCE DO JOIN
-            /*return (await _dataContext.Annotation.AsNoTracking()
-                .Join(_dataContext.User, a => a.UserId, u => u.Id, (a, u) => new
+            /*return (await _dataContextEF.Annotation.AsNoTracking()
+                .Join(_dataContextEF.User, a => a.UserId, u => u.Id, (a, u) => new
                 {
                     Annotation = a,
                     User = u
@@ -57,20 +57,20 @@ namespace Api.Repositories.Annotations
 
         public async Task<Annotation?> GetAsync(int annotationId)
         {
-            return await _dataContext.Annotation.AsNoTracking()
+            return await _dataContextEF.Annotation.AsNoTracking()
                 .FirstOrDefaultAsync(a => a.Id == annotationId);
         }
 
         public async Task<IList<Annotation>> GetByUserAsync(int userId)
         {
-            return await _dataContext.Annotation.AsNoTracking()
+            return await _dataContextEF.Annotation.AsNoTracking()
                .Where(a => a.UserId == userId)
                .ToListAsync();
         }
 
         public async Task<bool> ExistsAsync(Expression<Func<Annotation, bool>> func)
         {
-            return await _dataContext.Annotation.AsNoTracking()
+            return await _dataContextEF.Annotation.AsNoTracking()
                 .AnyAsync(func);
         }
     }

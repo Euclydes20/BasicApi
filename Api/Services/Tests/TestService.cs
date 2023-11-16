@@ -1,5 +1,4 @@
 ﻿using Api.Domain.Tests;
-using Api.Infra.Database;
 
 namespace Api.Services.Tests
 {
@@ -10,6 +9,16 @@ namespace Api.Services.Tests
         public TestService(ITestRepository testRepository)
         {
             _testRepository = testRepository;
+        }
+
+        public async Task<int> DeleteAllWithEFAsync()
+        {
+            return await _testRepository.DeleteAllWithEFAsync();
+        }
+
+        public async Task<int> DeleteAllWithLQAsync()
+        {
+            return await _testRepository.DeleteAllWithLQAsync();
         }
 
         public async Task<Test> AddWithEFAsync(Test test)

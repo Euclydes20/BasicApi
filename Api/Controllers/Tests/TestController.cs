@@ -22,6 +22,52 @@ namespace Api.Controllers.Tests
         [AllowAnonymous]
         [Authorization(true)]
         [HttpPost]
+        [Route("DeleteAllWithEF")]
+        public async Task<IActionResult> DeleteAllWithEFAsync()
+        {
+            var response = new ResponseInfo<int>();
+            try
+            {
+                response.Data = await _testService.DeleteAllWithEFAsync();
+                response.Message = $"Deleted {response.Data} registers.";
+
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                response.Success = false;
+                response.Message = ex.Message;
+
+                return BadRequest(response);
+            }
+        }
+
+        [AllowAnonymous]
+        [Authorization(true)]
+        [HttpPost]
+        [Route("DeleteAllWithLQ")]
+        public async Task<IActionResult> DeleteAllWithLQAsync()
+        {
+            var response = new ResponseInfo<int>();
+            try
+            {
+                response.Data = await _testService.DeleteAllWithLQAsync();
+                response.Message = $"Deleted {response.Data} registers.";
+
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                response.Success = false;
+                response.Message = ex.Message;
+
+                return BadRequest(response);
+            }
+        }
+
+        [AllowAnonymous]
+        [Authorization(true)]
+        [HttpPost]
         [Route("AddWithEF")]
         public async Task<IActionResult> AddWithEFAsync(Test test)
         {

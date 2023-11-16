@@ -58,7 +58,7 @@ namespace Api
             switch (dbType)
             {
                 case DbType.SqlServer:
-                    serviceDescriptors.AddDbContext<Infra.Database.DataContext>(options => 
+                    serviceDescriptors.AddDbContext<DataContextEF>(options => 
                         options.UseSqlServer(connectionString)
                             .EnableSensitiveDataLogging());
                     serviceDescriptors.AddTransient(s =>
@@ -72,7 +72,7 @@ namespace Api
 
                 case DbType.Postgres:
                     serviceDescriptors/*.AddEntityFrameworkNpgsql()*/
-                        .AddDbContext<Infra.Database.DataContext>(options => 
+                        .AddDbContext<DataContextEF>(options => 
                             options.UseNpgsql(connectionString)
                                 .EnableSensitiveDataLogging());
                     serviceDescriptors.AddTransient(s => 

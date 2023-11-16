@@ -6,16 +6,16 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Api.Infra.Database
 {
-    public class DataContext : DbContext
+    public class DataContextEF : DbContext
     {
-        public DataContext()
+        public DataContextEF()
         {
             /*ChangeTracker.AutoDetectChangesEnabled = false;
             ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
             ChangeTracker.LazyLoadingEnabled = false;*/
         }
 
-        public DataContext(DbContextOptions<DataContext> options)
+        public DataContextEF(DbContextOptions<DataContextEF> options)
             : base(options)
         {
             /*ChangeTracker.AutoDetectChangesEnabled = false;
