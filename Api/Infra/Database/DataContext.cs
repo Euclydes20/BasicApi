@@ -2,8 +2,6 @@
 using Api.Domain.UserAuthorizations;
 using Api.Domain.Users;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
-using System.Reflection.Metadata;
 
 namespace Api.Infra.Database
 {

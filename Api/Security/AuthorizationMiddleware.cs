@@ -1,5 +1,4 @@
 ﻿using Api.Auxiliary;
-using Api.Domain;
 using Api.Domain.UserAuthorizations;
 using System.Net;
 using System.Security.Claims;
@@ -9,18 +8,14 @@ namespace Api.Security
     public class AuthorizationMiddleware
     {
         private readonly RequestDelegate _requestEndpoint;
-        private IUserAuthorizationService _userAuthorizationService;
 
-        public AuthorizationMiddleware(RequestDelegate requestEndpoint/*, IUserAuthorizationService userAuthorizationService*/)
+        public AuthorizationMiddleware(RequestDelegate requestEndpoint)
         {
             _requestEndpoint = requestEndpoint;
-            //_userAuthorizationService = userAuthorizationService;
         }
 
         public async Task Invoke(HttpContext httpContext, IUserAuthorizationService userAuthorizationService)
         {
-            _userAuthorizationService = userAuthorizationService;
-
             AuthorizationAttribute? authorizationAttribute = httpContext.GetEndpoint()
                 ?.Metadata
                 ?.FirstOrDefault(o => o is AuthorizationAttribute) as AuthorizationAttribute;
@@ -65,7 +60,13 @@ namespace Api.Security
                 return;
             }
 
-            bool? authorized = await _userAuthorizationService.UserIsAuthorizedAsync(userId.Value, authorizationAttribute.Authorization.Value.ToString());
+            if (userAuthorizationService is null)
+            {
+                await triggerNotAuthorized();
+                return;
+            }
+
+            bool? authorized = await userAuthorizationService.UserIsAuthorizedAsync(userId.Value, authorizationAttribute.Authorization.Value.ToString());
             if (!authorized.HasValue || !authorized.Value)
             {
                 await triggerNotAuthorized();

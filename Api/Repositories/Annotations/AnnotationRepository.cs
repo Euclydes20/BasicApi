@@ -1,5 +1,4 @@
 ﻿using Api.Domain.Annotations;
-using Api.Domain.Users;
 using Api.Infra.Database;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;

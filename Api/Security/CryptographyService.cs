@@ -1,6 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using Microsoft.IdentityModel.Tokens;
-using System.Reflection;
+﻿using Microsoft.IdentityModel.Tokens;
 using System.Security.Cryptography;
 using System.Text;
 

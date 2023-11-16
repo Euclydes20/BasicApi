@@ -1,5 +1,4 @@
-﻿using Api.Security;
-using FluentMigrator;
+﻿using FluentMigrator;
 
 namespace Api.Infra.Migrations
 {

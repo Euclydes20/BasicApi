@@ -1,7 +1,4 @@
-﻿using System.Collections;
-using System.Collections.ObjectModel;
-
-namespace Api.Security
+﻿namespace Api.Security
 {
     public class AuthorizationMap
     {

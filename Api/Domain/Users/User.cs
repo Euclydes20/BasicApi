@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-
-namespace Api.Domain.Users
+﻿namespace Api.Domain.Users
 {
     public sealed class User
     {

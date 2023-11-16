@@ -1,6 +1,5 @@
 ﻿using Api.Domain;
 using Api.Domain.UserAuthorizations;
-using Api.Domain.Users;
 using Api.Security;
 using System.Linq.Expressions;
 

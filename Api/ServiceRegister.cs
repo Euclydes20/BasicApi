@@ -8,7 +8,6 @@ using Api.Infra.Security;
 using Api.Repositories.Annotations;
 using Api.Repositories.UserAuthorizations;
 using Api.Repositories.Users;
-using Api.Security;
 using Api.Services;
 using Api.Services.Annotations;
 using Api.Services.Security;
@@ -61,7 +60,7 @@ namespace Api
                     throw new NotImplementedException();
 
                 case DbType.Postgres:
-                    serviceDescriptors.AddEntityFrameworkNpgsql()
+                    serviceDescriptors/*.AddEntityFrameworkNpgsql()*/
                         .AddDbContext<DataContext>(options => 
                             options.UseNpgsql(connectionString)
                                 .EnableSensitiveDataLogging());

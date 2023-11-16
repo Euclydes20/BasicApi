@@ -158,7 +158,7 @@ namespace Api.Infra.Database
 
         internal static string GetConnectionString(bool master = false, bool noDatabase = false)
         {
-            string connectionString = string.Empty;
+            string connectionString;
 
             switch (DatabaseType)
             {

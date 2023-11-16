@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace Api.Models.Security
+﻿namespace Api.Models.Security
 {
     public sealed class Authentication
     {
