@@ -26,10 +26,10 @@ namespace Api.Security
                 return;
             }
 
-            AuthorizationAttribute? authorizationAttribute = httpContext.GetEndpoint()
-                ?.Metadata?.FirstOrDefault(o => o is AuthorizationAttribute) as AuthorizationAttribute;
-
-            if (authorizationAttribute is null || (!authorizationAttribute.Authorization.HasValue && !authorizationAttribute.OnlySuperUser))
+            if (httpContext.GetEndpoint()
+                    ?.Metadata
+                    ?.FirstOrDefault(o => o is AuthorizationAttribute) is not AuthorizationAttribute authorizationAttribute 
+                || (!authorizationAttribute.Authorization.HasValue && !authorizationAttribute.OnlySuperUser))
             {
                 await _requestEndpoint(httpContext);
                 return;

@@ -90,28 +90,6 @@ namespace Api.Controllers.Tests
         [AllowAnonymous]
         [Authorization(true)]
         [HttpPost]
-        [Route("DeleteWithEF/{testId}")]
-        public async Task<IActionResult> DeleteWithEFAsync(int testId)
-        {
-            var response = new ResponseInfo<object>();
-            try
-            {
-                await _testService.DeleteWithEFAsync(testId);
-
-                return Ok(response);
-            }
-            catch (Exception ex)
-            {
-                response.Success = false;
-                response.Message = ex.Message;
-
-                return BadRequest(response);
-            }
-        }
-
-        [AllowAnonymous]
-        [Authorization(true)]
-        [HttpPost]
         [Route("AddWithLQ")]
         public async Task<IActionResult> AddWithLQAsync(Test test)
         {
@@ -134,6 +112,28 @@ namespace Api.Controllers.Tests
         [AllowAnonymous]
         [Authorization(true)]
         [HttpPost]
+        [Route("DeleteWithEF/{testId}")]
+        public async Task<IActionResult> DeleteWithEFAsync(int testId)
+        {
+            var response = new ResponseInfo<object>();
+            try
+            {
+                await _testService.DeleteWithEFAsync(testId);
+
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                response.Success = false;
+                response.Message = ex.Message;
+
+                return BadRequest(response);
+            }
+        }
+
+        [AllowAnonymous]
+        [Authorization(true)]
+        [HttpPost]
         [Route("DeleteWithLQ/{testId}")]
         public async Task<IActionResult> DeleteWithLQAsync(int testId)
         {
@@ -143,6 +143,54 @@ namespace Api.Controllers.Tests
                 await _testService.DeleteWithLQAsync(testId);
 
                 return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                response.Success = false;
+                response.Message = ex.Message;
+
+                return BadRequest(response);
+            }
+        }
+
+        [AllowAnonymous]
+        [Authorization(true)]
+        [HttpPost]
+        [Route("AddWithEF/{quantity}/{multipleAdd?}")]
+        public async Task<IActionResult> AddRandomWithEFAsync(int quantity, bool multipleAdd = false)
+        {
+            var response = new ResponseInfo<IList<Test>>();
+            try
+            {
+                response.Message = "50 primeiros e últimos registros adicionados.";
+                response.Data = await _testService.AddRandomWithEFAsync(quantity, multipleAdd);
+                response.Data = response.Data.Take(50).Concat(response.Data.TakeLast(50)).ToList();
+
+                return StatusCode(StatusCodes.Status201Created, response);
+            }
+            catch (Exception ex)
+            {
+                response.Success = false;
+                response.Message = ex.Message;
+
+                return BadRequest(response);
+            }
+        }
+
+        [AllowAnonymous]
+        [Authorization(true)]
+        [HttpPost]
+        [Route("AddWithLQ/{quantity}/{multipleAdd?}")]
+        public async Task<IActionResult> AddRandomWithLQAsync(int quantity, bool multipleAdd = false)
+        {
+            var response = new ResponseInfo<IList<Test>>();
+            try
+            {
+                response.Message = "50 primeiros e últimos registros adicionados.";
+                response.Data = await _testService.AddRandomWithLQAsync(quantity, multipleAdd);
+                response.Data = response.Data.Take(50).Concat(response.Data.TakeLast(50)).ToList();
+
+                return StatusCode(StatusCodes.Status201Created, response);
             }
             catch (Exception ex)
             {

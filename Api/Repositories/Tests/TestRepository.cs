@@ -1,6 +1,7 @@
 ﻿using Api.Domain.Tests;
 using Api.Infra.Database;
 using LinqToDB;
+using LinqToDB.Data;
 using static System.Net.Mime.MediaTypeNames;
 
 namespace Api.Repositories.Tests
@@ -47,19 +48,40 @@ namespace Api.Repositories.Tests
             return test;
         }
 
+        public async Task<Test> AddWithLQAsync(Test test)
+        {
+            test.Id = await _dataContextLQ.InsertWithInt32IdentityAsync(test);
+
+            return test;
+        }
+
+        public async Task<IList<Test>> AddWithEFAsync(IList<Test> tests)
+        {
+            await _dataContextEF.Test
+                .AddRangeAsync(tests);
+
+            await _dataContextEF.SaveChangesAsync();
+
+            return tests;
+        }
+
+        public async Task<IList<Test>> AddWithLQAsync(IList<Test> tests)
+        {
+            // LINQ2DB NÃO SUPORTA INSERT MÚLTIPLO COM RETORNO DE IDENTITY
+            foreach (var test in tests)
+            {
+                test.Id = await _dataContextLQ.InsertWithInt32IdentityAsync(test);
+            }
+
+            return tests;
+        }
+
         public async Task DeleteWithEFAsync(int testId)
         {
             await _dataContextEF.Test
                 .DeleteAsync(t => t.Id == testId);
 
             await _dataContextEF.SaveChangesAsync();
-        }
-
-        public async Task<Test> AddWithLQAsync(Test test)
-        {
-            test.Id = await _dataContextLQ.InsertWithInt32IdentityAsync(test);
-
-            return test;
         }
 
         public async Task DeleteWithLQAsync(int testId)
