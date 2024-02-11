@@ -1,6 +1,7 @@
 ﻿using Api.Domain.Tests;
 using Api.Infra.Database;
 using LinqToDB;
+using Microsoft.EntityFrameworkCore;
 
 namespace Api.Repositories.Tests
 {
@@ -17,11 +18,15 @@ namespace Api.Repositories.Tests
 
         public async Task<int> DeleteAllWithEFAsync()
         {
-            int quantity = _dataContextEF.Test
+            // LENTO, NOVAS VERSÕES DO .NET SUPORTAM 'ExecuteDelete'
+            /*int quantity = _dataContextEF.Test
                 .Count();
 
             _dataContextEF.Test
-                .RemoveRange(_dataContextEF.Test);
+                .RemoveRange(_dataContextEF.Test);*/
+
+            int quantity = await _dataContextEF.Test
+                .ExecuteDeleteAsync();
 
             await _dataContextEF.SaveChangesAsync();
 
@@ -76,8 +81,9 @@ namespace Api.Repositories.Tests
 
         public async Task DeleteWithEFAsync(int testId)
         {
+            // NOVAS VERSÕES DO .NET SUPORTAM 'ExecuteDelete'
             await _dataContextEF.Test
-                .DeleteAsync(t => t.Id == testId);
+                .Where(t => t.Id == testId).ExecuteDeleteAsync();
 
             await _dataContextEF.SaveChangesAsync();
         }
