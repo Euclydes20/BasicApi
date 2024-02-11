@@ -1,6 +1,8 @@
-﻿using Api.Domain.Tests;
+﻿using Api.Auxiliary;
+using Api.Domain.Tests;
 using Api.Models;
 using Api.Security;
+using Google.Authenticator;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,14 +12,10 @@ namespace Api.Controllers.Tests
     [Authorize]
     [Route("v1/[controller]")]
     [Tags("Tests")]
-    public class TestController : ControllerBase
+    public class TestController(ITestService testService, TwoFactorAuthenticator twoFactorAuthenticator) : ControllerBase
     {
-        private readonly ITestService _testService;
-
-        public TestController(ITestService testService)
-        {
-            _testService = testService;
-        }
+        private readonly ITestService _testService = testService;
+        private readonly TwoFactorAuthenticator _twoFactorAuthenticator = twoFactorAuthenticator;
 
         [AllowAnonymous]
         [Authorization(true)]
@@ -35,10 +33,7 @@ namespace Api.Controllers.Tests
             }
             catch (Exception ex)
             {
-                response.Success = false;
-                response.Message = ex.Message;
-
-                return BadRequest(response);
+                return BadRequest(Extensions.ResolveResponseException(ex, response));
             }
         }
 
@@ -58,10 +53,7 @@ namespace Api.Controllers.Tests
             }
             catch (Exception ex)
             {
-                response.Success = false;
-                response.Message = ex.Message;
-
-                return BadRequest(response);
+                return BadRequest(Extensions.ResolveResponseException(ex, response));
             }
         }
 
@@ -80,10 +72,7 @@ namespace Api.Controllers.Tests
             }
             catch (Exception ex)
             {
-                response.Success = false;
-                response.Message = ex.Message;
-
-                return BadRequest(response);
+                return BadRequest(Extensions.ResolveResponseException(ex, response));
             }
         }
 
@@ -102,10 +91,7 @@ namespace Api.Controllers.Tests
             }
             catch (Exception ex)
             {
-                response.Success = false;
-                response.Message = ex.Message;
-
-                return BadRequest(response);
+                return BadRequest(Extensions.ResolveResponseException(ex, response));
             }
         }
 
@@ -124,10 +110,7 @@ namespace Api.Controllers.Tests
             }
             catch (Exception ex)
             {
-                response.Success = false;
-                response.Message = ex.Message;
-
-                return BadRequest(response);
+                return BadRequest(Extensions.ResolveResponseException(ex, response));
             }
         }
 
@@ -146,10 +129,7 @@ namespace Api.Controllers.Tests
             }
             catch (Exception ex)
             {
-                response.Success = false;
-                response.Message = ex.Message;
-
-                return BadRequest(response);
+                return BadRequest(Extensions.ResolveResponseException(ex, response));
             }
         }
 
@@ -164,16 +144,13 @@ namespace Api.Controllers.Tests
             {
                 response.Message = "50 primeiros e últimos registros adicionados.";
                 response.Data = await _testService.AddRandomWithEFAsync(quantity, multipleAdd);
-                response.Data = response.Data.Take(50).Concat(response.Data.TakeLast(50)).ToList();
+                response.Data = response.Data.Take(50).Concat(response.Data.TakeLast(quantity - 50)).ToList();
 
                 return StatusCode(StatusCodes.Status201Created, response);
             }
             catch (Exception ex)
             {
-                response.Success = false;
-                response.Message = ex.Message;
-
-                return BadRequest(response);
+                return BadRequest(Extensions.ResolveResponseException(ex, response));
             }
         }
 
@@ -188,16 +165,56 @@ namespace Api.Controllers.Tests
             {
                 response.Message = "50 primeiros e últimos registros adicionados.";
                 response.Data = await _testService.AddRandomWithLQAsync(quantity, multipleAdd);
-                response.Data = response.Data.Take(50).Concat(response.Data.TakeLast(50)).ToList();
+                response.Data = response.Data.Take(50).Concat(response.Data.TakeLast(quantity - 50)).ToList();
 
                 return StatusCode(StatusCodes.Status201Created, response);
             }
             catch (Exception ex)
             {
-                response.Success = false;
-                response.Message = ex.Message;
+                return BadRequest(Extensions.ResolveResponseException(ex, response));
+            }
+        }
 
-                return BadRequest(response);
+        [AllowAnonymous]
+        [Authorization(true)]
+        [HttpPost]
+        [Route("GenerateQRCodeGoogleTFA/{email}")]
+        public async Task<IActionResult> GenerateQRCodeGoogleTFA(string email)
+        {
+            var response = new ResponseInfo<string>();
+            try
+            {
+                string key = Guid.NewGuid().ToString().Replace("-", "")[..10];
+                SetupCode setupInfo = _twoFactorAuthenticator.GenerateSetupCode("Garagem do Código (2FA)", email, key, false, 3);
+
+                response.Message = $"Secret Key: {key}.\nCopy the Base64 QRCode and past in browser to view.";
+                response.Data = setupInfo.QrCodeSetupImageUrl;
+
+                return StatusCode(StatusCodes.Status201Created, response);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(Extensions.ResolveResponseException(ex, response));
+            }
+        }
+
+        [AllowAnonymous]
+        [Authorization(true)]
+        [HttpPost]
+        [Route("ValidateCodeGoogleTFA/{code}/{key}")]
+        public async Task<IActionResult> ValidateCodeGoogleTFA(string code, string key)
+        {
+            var response = new ResponseInfo<bool>();
+            try
+            {
+                response.Data = _twoFactorAuthenticator.ValidateTwoFactorPIN(key, code);
+                response.Message = response.Data ? "Valid." : "Invalid.";
+
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(Extensions.ResolveResponseException(ex, response));
             }
         }
     }

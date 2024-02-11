@@ -1,6 +1,4 @@
-﻿using Api.Repositories.Tests;
-
-namespace Api.Domain.Tests
+﻿namespace Api.Domain.Tests
 {
     public interface ITestRepository
     {

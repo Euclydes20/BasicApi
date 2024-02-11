@@ -17,6 +17,7 @@ using Api.Services.Tests;
 using Api.Services.UserAuthorizations;
 using Api.Services.Users;
 using FluentMigrator.Runner;
+using Google.Authenticator;
 using LinqToDB;
 using Microsoft.EntityFrameworkCore;
 
@@ -46,6 +47,8 @@ namespace Api
 
             serviceDescriptors.AddTransient<ITestService, TestService>();
             serviceDescriptors.AddTransient<ITestRepository, TestRepository>();
+
+            serviceDescriptors.AddTransient<TwoFactorAuthenticator, TwoFactorAuthenticator>();
 
             RegisterDbContext(serviceDescriptors);
             RegisterMigrationRunner(serviceDescriptors);

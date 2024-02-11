@@ -1,8 +1,6 @@
 ﻿using Api.Domain.Tests;
 using Api.Infra.Database;
 using LinqToDB;
-using LinqToDB.Data;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace Api.Repositories.Tests
 {
