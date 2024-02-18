@@ -5,6 +5,9 @@ using Api.Security;
 using Google.Authenticator;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
+using System.IO;
+using System.Text;
 
 namespace Api.Controllers.Tests
 {
@@ -211,6 +214,49 @@ namespace Api.Controllers.Tests
                 response.Message = response.Data ? "Valid." : "Invalid.";
 
                 return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(Extensions.ResolveResponseException(ex, response));
+            }
+        }
+
+        [AllowAnonymous]
+        [Authorization(true)]
+        [HttpGet]
+        [Route("DownloadFile")]
+        public async Task<IActionResult> DownloadFile()
+        {
+            var response = new ResponseInfo<byte[]>();
+            try
+            {
+                //File(new FileStream(@"C:\Users\Euclydes\Documents\GerenciadorDailys\2024\02\09_02_2024.txt", FileMode.Open, FileAccess.Read), "application/octet-stream");
+                //response.Data = File(await new StreamContent(new FileStream(@"C:\Users\Euclydes\Documents\GerenciadorDailys\2024\02\09_02_2024.txt", FileMode.Open, FileAccess.Read)).ReadAsByteArrayAsync(), "application/octet-stream");
+
+                //response.Data = new FileStreamResult(new FileStream(@"C:\Users\Euclydes\Documents\GerenciadorDailys\2024\02\09_02_2024.txt", FileMode.Open, FileAccess.Read), "application/octet-stream");
+
+                //using (var stream = new FileStream(@"C:\Users\Euclydes\Documents\GerenciadorDailys\2024\02\09_02_2024.txt", FileMode.Open, FileAccess.Read))
+                //response.Data = new FormFile(stream, 0, stream.Length, string.Empty, $"{Path.GetFileNameWithoutExtension(stream.Name)}");
+
+                //response.Data = new ByteArrayContent(System.IO.File.ReadAllBytes(@"C:\Users\Euclydes\Documents\GerenciadorDailys\2024\02\09_02_2024.txt"));
+                //return Ok(response);
+
+                return File(System.IO.File.ReadAllBytes(@"C:\Users\Euclydes\Documents\Projetos Programacao\Visual Studio\GerenciadorDeDailys\GerenciadorDeDailys\bin\Debug\GerenciadorDeDailys.exe"), "application/octet-stream");//Ok(response);
+
+                // @"C:\Users\Euclydes\Documents\Projetos Programacao\Visual Studio\GerenciadorDeDailys\GerenciadorDeDailys\bin\Debug\GerenciadorDeDailys.exe"
+                // @"C:\Users\Euclydes\Documents\GerenciadorDailys\2024\02\09_02_2024.txt"
+
+                /*using (var sr = new StreamReader(@"C:\Users\Euclydes\Documents\Projetos Programacao\Visual Studio\GerenciadorDeDailys\GerenciadorDeDailys\bin\Debug\GerenciadorDeDailys.exe"))
+                {
+                    string text = sr.ReadToEnd();
+                    response.Data = Encoding.Latin1.GetBytes(text);
+                }*/
+                //response.Data = System.IO.File.ReadAllBytes(@"C:\Users\Euclydes\Documents\Projetos Programacao\Visual Studio\GerenciadorDeDailys\GerenciadorDeDailys\bin\Debug\GerenciadorDeDailys.exe");
+                //response.Data = System.IO.File.ReadAllText(@"C:\Users\Euclydes\Documents\GerenciadorDailys\2024\02\09_02_2024.txt", Encoding.Latin1);
+
+                //return Ok(response);
+
+                //return File(new FileStream(@"C:\Users\Euclydes\Documents\GerenciadorDailys\2024\02\09_02_2024.txt", FileMode.Open, FileAccess.Read), "application/octet-stream", "arquivo.txt");
             }
             catch (Exception ex)
             {

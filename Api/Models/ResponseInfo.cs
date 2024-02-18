@@ -2,12 +2,16 @@
 
 namespace Api.Models
 {
-    public class ResponseInfo<T>
+    public class ResponseInfo<T> : ResponseInfo
+    {
+        public T? Data { get; set; }
+    }
+
+    public class ResponseInfo
     {
         public bool Success { get; set; } = true;
         public string Message { get; set; } = string.Empty;
         public ResponseCode Code { get; set; } = ResponseCode.Success;
-        public T? Data { get; set; }
         public DateTime OperationDate
         {
             get
