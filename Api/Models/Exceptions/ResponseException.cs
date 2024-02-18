@@ -34,8 +34,16 @@ namespace Api.Models.Exceptions
             ErrorCode = errorCode;
         }
 
-        public ResponseInfo<T> ResolveResponseInfo<T>(ResponseInfo<T> responseInfo) 
-            => ResolveResponseInfo(responseInfo);
+        public ResponseInfo<T> ResolveResponseInfo<T>(ResponseInfo<T> responseInfo)
+        {
+            responseInfo ??= new ResponseInfo<T>();
+
+            responseInfo.Success = false;
+            responseInfo.Code = ErrorCode;
+            responseInfo.Message = Message;
+
+            return responseInfo;
+        }
 
         public ResponseInfo ResolveResponseInfo(ResponseInfo responseInfo)
         {

@@ -5,9 +5,6 @@ using Api.Security;
 using Google.Authenticator;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
-using System.IO;
-using System.Text;
 
 namespace Api.Controllers.Tests
 {
@@ -31,7 +28,7 @@ namespace Api.Controllers.Tests
             {
                 response.Data = await _testService.DeleteAllWithEFAsync();
                 response.Message = $"Deleted {response.Data} registers.";
-
+                
                 return Ok(response);
             }
             catch (Exception ex)

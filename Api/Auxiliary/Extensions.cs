@@ -6,7 +6,15 @@ namespace Api.Auxiliary
     public class Extensions
     {
         public static ResponseInfo<T> ResolveResponseException<T>(Exception ex, ResponseInfo<T> responseInfo)
-            => ResolveResponseException(ex, responseInfo);
+        {
+            if (ex is null)
+                new ResponseException().ResolveResponseInfo(responseInfo);
+
+            if (ex is ResponseException exRI)
+                return exRI.ResolveResponseInfo(responseInfo);
+
+            return new ResponseException(ex).ResolveResponseInfo(responseInfo);
+        }
 
         public static ResponseInfo ResolveResponseException(Exception ex, ResponseInfo responseInfo)
         {
