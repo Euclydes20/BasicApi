@@ -1,6 +1,7 @@
 ﻿using Api.Auxiliary;
 using Api.Domain.Tests;
 using Api.Models;
+using Api.Models.Exceptions;
 using Api.Security;
 using Google.Authenticator;
 using Microsoft.AspNetCore.Authorization;
@@ -254,6 +255,38 @@ namespace Api.Controllers.Tests
                 //return Ok(response);
 
                 //return File(new FileStream(@"C:\Users\Euclydes\Documents\GerenciadorDailys\2024\02\09_02_2024.txt", FileMode.Open, FileAccess.Read), "application/octet-stream", "arquivo.txt");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(Extensions.ResolveResponseException(ex, response));
+            }
+        }
+        
+        [AllowAnonymous]
+        [Authorization(true)]
+        [HttpGet]
+        [Route("SomeTest")]
+        public async Task<IActionResult> SomeTest()
+        {
+            var response = new ResponseInfo();
+            try
+            {
+                string? removeIpAddress = HttpContext.Connection.RemoteIpAddress?.ToString()
+                    ?? throw new ResponseException("User connection address not identified.");
+
+                string? userAgent = HttpContext.Request.Headers.UserAgent.ToString() 
+                    ?? throw new ResponseException("User agent not identified.");
+
+                UserAgentInfo userAgentInfo = new(userAgent);
+                if (!userAgentInfo.AmbientIdentified)
+                    throw new ResponseException("Request ambient not identified.");
+
+                string ambientInfo = $"{removeIpAddress} -> {userAgentInfo}";
+
+                response.Success = true;
+                response.Message = ambientInfo;
+
+                return Ok(response);
             }
             catch (Exception ex)
             {
