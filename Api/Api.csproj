@@ -11,6 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="DeviceDetector.NET" Version="6.3.0" />
     <PackageReference Include="FluentMigrator" Version="5.0.0" />
     <PackageReference Include="FluentMigrator.Runner" Version="5.0.0" />
     <PackageReference Include="GoogleAuthenticator" Version="3.2.0" />

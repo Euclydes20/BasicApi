@@ -3,6 +3,10 @@ using Api.Domain.Tests;
 using Api.Models;
 using Api.Models.Exceptions;
 using Api.Security;
+using DeviceDetectorNET;
+using DeviceDetectorNET.Parser;
+using DeviceDetectorNET.Results;
+using DeviceDetectorNET.Results.Client;
 using Google.Authenticator;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -285,6 +289,88 @@ namespace Api.Controllers.Tests
 
                 response.Success = true;
                 response.Message = ambientInfo;
+
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(Extensions.ResolveResponseException(ex, response));
+            }
+        }
+
+        [AllowAnonymous]
+        [Authorization(true)]
+        [HttpGet]
+        [Route("SomeTest2")]
+        public async Task<IActionResult> SomeTest2()
+        {
+            var response = new ResponseInfo<object>();
+            try
+            {
+                string? userAgent = HttpContext.Request.Headers.UserAgent.ToString()
+                    ?? throw new ResponseException("User agent not identified.");
+
+                DeviceDetector.SetVersionTruncation(VersionTruncation.VERSION_TRUNCATION_NONE);
+
+                Dictionary<string, string?> headers = Request.Headers.ToDictionary(a => a.Key, a => a.Value.ToArray().FirstOrDefault());
+                ClientHints clientHints = ClientHints.Factory(headers);
+                // ESTÁ CAUSANDO IDENTIFICAÇÃO INCORRETA DO BROWSER, INFORMANDO 'Iridium'
+                DeviceDetector deviceDetector = new(userAgent/*, clientHints*/);
+
+                //deviceDetector.SetCache(new DictionaryCache());
+                //deviceDetector.DiscardBotInformation();
+                //deviceDetector.SkipBotDetection();
+
+                deviceDetector.Parse();
+
+                if (deviceDetector.IsBot())
+                {
+                    // handle bots,spiders,crawlers,...
+                    var botInfo = deviceDetector.GetBot().Match;
+                    
+                    response.Success = true;
+                    response.Message = "Bot detected.";
+
+                    response.Data = new
+                    {
+                        botInfo.Name,
+                        botInfo.Url,
+                        botInfo.Producer,
+                        botInfo.Category,
+                    };
+                }
+                else
+                {
+                    ClientMatchResult clientInfo = deviceDetector.GetClient().Match ?? new(); // holds information about browser, feed reader, media player, ...
+                    OsMatchResult osInfo = deviceDetector.GetOs().Match ?? new();
+                    string device = deviceDetector.GetDeviceName() ?? string.Empty;
+                    string brand = deviceDetector.GetBrandName() ?? string.Empty;
+                    string model = deviceDetector.GetModel() ?? string.Empty;
+
+                    response.Success = true;
+                    response.Message = "";
+
+                    response.Data = new
+                    {
+                        Client = new
+                        {
+                            clientInfo.Name,
+                            clientInfo.Version,
+                            clientInfo.Type,
+                        },
+                        OS = new
+                        {
+                            osInfo.Name,
+                            osInfo.Version,
+                            osInfo.Platform,
+                            osInfo.Family,
+                            osInfo.ShortName,
+                        },
+                        Device = device,
+                        Brand = brand,
+                        Model = model,
+                    };
+                }
 
                 return Ok(response);
             }
