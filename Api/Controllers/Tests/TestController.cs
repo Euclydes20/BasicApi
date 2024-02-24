@@ -5,6 +5,7 @@ using Api.Models.Exceptions;
 using Api.Security;
 using DeviceDetectorNET;
 using DeviceDetectorNET.Parser;
+using DeviceDetectorNET.Parser.Device;
 using DeviceDetectorNET.Results;
 using DeviceDetectorNET.Results.Client;
 using Google.Authenticator;
@@ -312,14 +313,16 @@ namespace Api.Controllers.Tests
 
                 DeviceDetector.SetVersionTruncation(VersionTruncation.VERSION_TRUNCATION_NONE);
 
-                Dictionary<string, string?> headers = Request.Headers.ToDictionary(a => a.Key, a => a.Value.ToArray().FirstOrDefault());
-                ClientHints clientHints = ClientHints.Factory(headers);
+                //Dictionary<string, string?> headers = Request.Headers.ToDictionary(a => a.Key, a => a.Value.ToArray().FirstOrDefault());
+                //ClientHints clientHints = ClientHints.Factory(headers);
                 // ESTÁ CAUSANDO IDENTIFICAÇÃO INCORRETA DO BROWSER, INFORMANDO 'Iridium'
                 DeviceDetector deviceDetector = new(userAgent/*, clientHints*/);
 
                 //deviceDetector.SetCache(new DictionaryCache());
-                //deviceDetector.DiscardBotInformation();
-                //deviceDetector.SkipBotDetection();
+
+                deviceDetector.DiscardBotInformation();
+
+                deviceDetector.SkipBotDetection();
 
                 deviceDetector.Parse();
 
@@ -348,9 +351,8 @@ namespace Api.Controllers.Tests
                     string model = deviceDetector.GetModel() ?? string.Empty;
 
                     response.Success = true;
-                    response.Message = "";
 
-                    response.Data = new
+                    var mountedObject = new
                     {
                         Client = new
                         {
@@ -370,6 +372,57 @@ namespace Api.Controllers.Tests
                         Brand = brand,
                         Model = model,
                     };
+
+                    response.Data = mountedObject;
+                    /*int hash1 = response.Data.GetHashCode();
+                    response.Data = mountedObject with
+                    {
+                        Brand = "POCO",
+                    };
+                    int hash2 = response.Data.GetHashCode();*/
+
+                    response.Message = $"Result hash: {response.Data.GetHashCode()}";
+                }
+
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(Extensions.ResolveResponseException(ex, response));
+            }
+        }
+        
+        [AllowAnonymous]
+        [Authorization(true)]
+        [HttpGet]
+        [Route("SomeTest3")]
+        public async Task<IActionResult> SomeTest3()
+        {
+            var response = new ResponseInfo<string>();
+            try
+            {
+                string? userAgent = HttpContext.Request.Headers.UserAgent.ToString()
+                    ?? throw new ResponseException("User agent not identified.");
+
+                BotParser botParser = new();
+                botParser.SetUserAgent(userAgent);
+
+                // OPTIONAL: discard bot information. Parse() will then return true instead of information
+                botParser.DiscardDetails = true;
+
+                BotMatchResult? result = botParser.Parse().Match;
+
+                if (result is not null)
+                {
+                    response.Success = true;
+                    response.Message = "";
+
+                    response.Data = result.ToString();
+                }
+                else
+                {
+                    response.Success = false;
+                    response.Message = "Information not identified.";
                 }
 
                 return Ok(response);
