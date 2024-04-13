@@ -4,6 +4,8 @@ using Api.Models;
 using Api.Models.Exceptions;
 using Api.Security;
 using DeviceDetectorNET;
+using DeviceDetectorNET.Cache;
+using DeviceDetectorNET.Class.Client;
 using DeviceDetectorNET.Parser;
 using DeviceDetectorNET.Parser.Device;
 using DeviceDetectorNET.Results;
@@ -11,6 +13,11 @@ using DeviceDetectorNET.Results.Client;
 using Google.Authenticator;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using MyCSharp.HttpUserAgentParser;
+using MyCSharp.HttpUserAgentParser.Providers;
+using Shyjus.BrowserDetection;
+using System.Net;
+using UAParser;
 
 namespace Api.Controllers.Tests
 {
@@ -18,10 +25,12 @@ namespace Api.Controllers.Tests
     [Authorize]
     [Route("v1/[controller]")]
     [Tags("Tests")]
-    public class TestController(ITestService testService, TwoFactorAuthenticator twoFactorAuthenticator) : ControllerBase
+    public class TestController(ITestService testService, TwoFactorAuthenticator twoFactorAuthenticator, IBrowserDetector browserDetector, IHttpUserAgentParserProvider httpUserAgentParserProvider) : ControllerBase
     {
         private readonly ITestService _testService = testService;
         private readonly TwoFactorAuthenticator _twoFactorAuthenticator = twoFactorAuthenticator;
+        private readonly IBrowserDetector _browserDetector = browserDetector;
+        private readonly IHttpUserAgentParserProvider _httpUserAgentParserProvider = httpUserAgentParserProvider;
 
         [AllowAnonymous]
         [Authorization(true)]
@@ -302,15 +311,15 @@ namespace Api.Controllers.Tests
         [AllowAnonymous]
         [Authorization(true)]
         [HttpGet]
-        [Route("SomeTest2")]
-        public async Task<IActionResult> SomeTest2()
+        [Route("DeviceDetectorNET")]
+        public async Task<IActionResult> DeviceDetectorNET()
         {
             var response = new ResponseInfo<object>();
             try
             {
                 string? userAgent = HttpContext.Request.Headers.UserAgent.ToString()
                     ?? throw new ResponseException("User agent not identified.");
-
+                
                 DeviceDetector.SetVersionTruncation(VersionTruncation.VERSION_TRUNCATION_NONE);
 
                 //Dictionary<string, string?> headers = Request.Headers.ToDictionary(a => a.Key, a => a.Value.ToArray().FirstOrDefault());
@@ -318,11 +327,11 @@ namespace Api.Controllers.Tests
                 // ESTÁ CAUSANDO IDENTIFICAÇÃO INCORRETA DO BROWSER, INFORMANDO 'Iridium'
                 DeviceDetector deviceDetector = new(userAgent/*, clientHints*/);
 
-                //deviceDetector.SetCache(new DictionaryCache());
+                deviceDetector.SetCache(new DictionaryCache());
 
                 deviceDetector.DiscardBotInformation();
 
-                deviceDetector.SkipBotDetection();
+                //deviceDetector.SkipBotDetection();
 
                 deviceDetector.Parse();
 
@@ -395,35 +404,132 @@ namespace Api.Controllers.Tests
         [AllowAnonymous]
         [Authorization(true)]
         [HttpGet]
-        [Route("SomeTest3")]
-        public async Task<IActionResult> SomeTest3()
+        [Route("UAParser")]
+        public async Task<IActionResult> UAParser()
         {
-            var response = new ResponseInfo<string>();
+            var response = new ResponseInfo<object>();
             try
             {
                 string? userAgent = HttpContext.Request.Headers.UserAgent.ToString()
                     ?? throw new ResponseException("User agent not identified.");
 
-                BotParser botParser = new();
-                botParser.SetUserAgent(userAgent);
+                // get a parser with the embedded regex patterns
+                Parser parser = Parser.GetDefault();
 
-                // OPTIONAL: discard bot information. Parse() will then return true instead of information
-                botParser.DiscardDetails = true;
+                // get a parser using externally supplied yaml definitions
+                // var uaParser = Parser.FromYaml(yamlString);
 
-                BotMatchResult? result = botParser.Parse().Match;
+                ClientInfo clientInfo = parser.Parse(userAgent);
+                
+                response.Success = true;
 
-                if (result is not null)
+                var mountedObject = new
                 {
-                    response.Success = true;
-                    response.Message = "";
+                    Client = new
+                    {
+                        clientInfo.UA.Family,
+                        clientInfo.UA.Major,
+                        clientInfo.UA.Minor,
+                        clientInfo.UA.Patch,
+                    },
+                    OS = new
+                    {
+                        clientInfo.OS.Family,
+                        clientInfo.OS.Major,
+                        clientInfo.OS.Minor,
+                        clientInfo.OS.Patch,
+                        clientInfo.OS.PatchMinor,
+                    },
+                    Device = new
+                    {
+                        clientInfo.Device.Family,
+                        clientInfo.Device.Model,
+                        clientInfo.Device.Brand,
+                        clientInfo.Device.IsSpider,
+                    }
+                };
 
-                    response.Data = result.ToString();
-                }
-                else
+                response.Data = mountedObject;
+
+                response.Message = $"Result hash: {response.Data.GetHashCode()}";
+
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(Extensions.ResolveResponseException(ex, response));
+            }
+        }
+
+        [AllowAnonymous]
+        [Authorization(true)]
+        [HttpGet]
+        [Route("BrowserDetector")]
+        public async Task<IActionResult> BrowserDetector()
+        {
+            var response = new ResponseInfo<object>();
+            try
+            {
+                string? userAgent = HttpContext.Request.Headers.UserAgent.ToString()
+                    ?? throw new ResponseException("User agent not identified.");
+
+                IBrowser browser = _browserDetector.Browser
+                    ?? throw new ResponseException("Request ambient not identified.");
+
+                response.Success = true;
+
+                var mountedObject = new
                 {
-                    response.Success = false;
-                    response.Message = "Information not identified.";
-                }
+                    browser.Name,
+                    browser.Version,
+                    browser.OS,
+                    browser.DeviceType,
+                };
+
+                response.Data = mountedObject;
+
+                response.Message = $"Result hash: {response.Data.GetHashCode()}";
+
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(Extensions.ResolveResponseException(ex, response));
+            }
+        }
+        
+        [AllowAnonymous]
+        [Authorization(true)]
+        [HttpGet]
+        [Route("HttpUserAgentParser")]
+        public async Task<IActionResult> HttpUserAgentParser()
+        {
+            var response = new ResponseInfo<object>();
+            try
+            {
+                string? userAgent = HttpContext.Request.Headers.UserAgent.ToString()
+                    ?? throw new ResponseException("User agent not identified.");
+
+                HttpUserAgentInformation information = _httpUserAgentParserProvider.Parse(userAgent);
+
+                response.Success = true;
+
+                var mountedObject = new
+                {
+                    information.Name,
+                    information.Version,
+                    information.Type,
+                    Platform = new
+                    {
+                        information.Platform?.Name,
+                        information.Platform?.PlatformType,
+                    },
+                    information.MobileDeviceType,
+                };
+
+                response.Data = mountedObject;
+
+                response.Message = $"Result hash: {response.Data.GetHashCode()}";
 
                 return Ok(response);
             }

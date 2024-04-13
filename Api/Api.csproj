@@ -11,17 +11,20 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="DeviceDetector.NET" Version="6.3.0" />
-    <PackageReference Include="FluentMigrator" Version="5.0.0" />
-    <PackageReference Include="FluentMigrator.Runner" Version="5.0.0" />
+    <PackageReference Include="DeviceDetector.NET" Version="6.3.1" />
+    <PackageReference Include="FluentMigrator" Version="5.1.0" />
+    <PackageReference Include="FluentMigrator.Runner" Version="5.1.0" />
     <PackageReference Include="GoogleAuthenticator" Version="3.2.0" />
-    <PackageReference Include="linq2db.PostgreSQL" Version="5.3.2" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.1" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.1" />
-    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.0" />
+    <PackageReference Include="linq2db.PostgreSQL" Version="5.4.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.2" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.2" />
+    <PackageReference Include="MyCSharp.HttpUserAgentParser" Version="3.0.1" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.2" />
+    <PackageReference Include="Shyjus.BrowserDetector" Version="2.0.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
     <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="6.5.0" />
     <PackageReference Include="System.Data.SqlClient" Version="4.8.6" />
+    <PackageReference Include="UAParser" Version="3.1.47" />
   </ItemGroup>
 
 </Project>

@@ -3,6 +3,7 @@ using Api.Infra.Database;
 using Api.Security;
 using FluentMigrator.Runner;
 using Microsoft.AspNetCore.Rewrite;
+using MyCSharp.HttpUserAgentParser.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,6 +22,9 @@ builder.Services.AddControllers(options =>
     options.SuppressImplicitRequiredAttributeForNonNullableReferenceTypes = true;
 });
 builder.Services.AddDirectoryBrowser();
+
+builder.Services.AddBrowserDetection();
+builder.Services.AddHttpUserAgentParser();
 
 Startup.SetAuthenticationService(builder.Services);
 Startup.SetApiDocumentation(builder.Services);
