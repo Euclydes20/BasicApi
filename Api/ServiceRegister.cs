@@ -1,5 +1,6 @@
 ﻿using Api.Domain;
 using Api.Domain.Annotations;
+using Api.Domain.ComplexEntityAndAggregates;
 using Api.Domain.Secutiry;
 using Api.Domain.Tests;
 using Api.Domain.UserAuthorizations;
@@ -7,11 +8,13 @@ using Api.Domain.Users;
 using Api.Infra.Database;
 using Api.Infra.Security;
 using Api.Repositories.Annotations;
+using Api.Repositories.ComplexEntityAndAggregates;
 using Api.Repositories.Tests;
 using Api.Repositories.UserAuthorizations;
 using Api.Repositories.Users;
 using Api.Services;
 using Api.Services.Annotations;
+using Api.Services.ComplexEntityAndAggregates;
 using Api.Services.Security;
 using Api.Services.Tests;
 using Api.Services.UserAuthorizations;
@@ -50,6 +53,9 @@ namespace Api
             serviceDescriptors.AddTransient<ITestRepository, TestRepository>();
 
             serviceDescriptors.AddTransient<TwoFactorAuthenticator, TwoFactorAuthenticator>();
+
+            serviceDescriptors.AddTransient<IComplexPrincipalService, ComplexPrincipalService>();
+            serviceDescriptors.AddTransient<IComplexPrincipalRepository, ComplexPrincipalRepository>();
 
             RegisterDbContext(serviceDescriptors);
             RegisterMigrationRunner(serviceDescriptors);

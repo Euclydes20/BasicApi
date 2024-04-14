@@ -146,7 +146,9 @@ namespace Api.Infra.Database
                 conn.Open();
 
                 var command = conn.CreateCommand();
-                command.CommandText = $"SELECT * FROM pg_database WHERE datname = '{DatabaseName}'";
+                // * -> datname, pois em novas versões do Postgresql e Npgsql, um seguinte erro é apresentado:
+                // "Reading as 'System.Object' is not supported for fields having DataTypeName 'aclitem[]'"
+                command.CommandText = $"SELECT datname FROM pg_database WHERE datname = '{DatabaseName}'";
 
                 var reader = command.ExecuteReader();
                 var data = new DataTable();

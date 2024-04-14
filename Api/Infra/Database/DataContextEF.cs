@@ -1,4 +1,5 @@
 ﻿using Api.Domain.Annotations;
+using Api.Domain.ComplexEntityAndAggregates;
 using Api.Domain.Tests;
 using Api.Domain.UserAuthorizations;
 using Api.Domain.Users;
@@ -40,5 +41,9 @@ namespace Api.Infra.Database
         public DbSet<Annotation> Annotation { get; set; }
         public DbSet<User> User { get; set; }
         public DbSet<UserAuthorization> UserAuthorization { get; set; }
+
+        public DbSet<ComplexPrincipal> ComplexPrincipal { get; set; }
+        public DbSet<ComplexAggregate> ComplexAggregate { get; set; }
+        public DbSet<ComplexSubAggregate> ComplexSubAggregate { get; set; }
     }
 }
