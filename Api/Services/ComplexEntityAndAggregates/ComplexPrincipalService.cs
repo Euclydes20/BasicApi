@@ -1,5 +1,4 @@
 ﻿using Api.Domain.ComplexEntityAndAggregates;
-using Api.Domain.Users;
 using Api.Models.Exceptions;
 using System.Linq.Expressions;
 

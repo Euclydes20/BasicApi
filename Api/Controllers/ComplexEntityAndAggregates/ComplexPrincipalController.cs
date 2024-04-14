@@ -1,11 +1,7 @@
 ﻿using Api.Auxiliary;
 using Api.Domain.ComplexEntityAndAggregates;
-using Api.Domain.Users;
 using Api.Models;
-using Api.Security;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Net;
 
 namespace Api.Controllers.ComplexEntityAndAggregates
 {

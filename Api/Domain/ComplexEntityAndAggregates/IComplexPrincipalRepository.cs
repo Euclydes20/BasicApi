@@ -1,5 +1,4 @@
-﻿using Api.Domain.Users;
-using System.Linq.Expressions;
+﻿using System.Linq.Expressions;
 
 namespace Api.Domain.ComplexEntityAndAggregates
 {

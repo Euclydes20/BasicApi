@@ -23,7 +23,6 @@ using FluentMigrator.Runner;
 using Google.Authenticator;
 using LinqToDB;
 using Microsoft.EntityFrameworkCore;
-using Shyjus.BrowserDetection;
 
 namespace Api
 {
