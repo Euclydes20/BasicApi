@@ -12,6 +12,8 @@ namespace Api.Repositories.ComplexEntityAndAggregates
 
         public async Task<ComplexPrincipal> AddAsync(ComplexPrincipal complexPrincipal)
         {
+            complexPrincipal.ClearReadOnlyFKs();
+
             await _dataContextEF.ComplexPrincipal.AddAsync(complexPrincipal);
             await _dataContextEF.SaveChangesAsync();
 
@@ -20,9 +22,8 @@ namespace Api.Repositories.ComplexEntityAndAggregates
 
         public async Task<ComplexPrincipal> UpdateAsync(ComplexPrincipal complexPrincipal)
         {
-            ComplexPrincipal? originalEntity = await GetAsync(complexPrincipal.Id);
-            if (originalEntity is null)
-                throw new ResponseException("Entity not found.");
+            ComplexPrincipal? originalEntity = await GetAsync(complexPrincipal.Id)
+                ?? throw new ResponseException("Entity not found.");
 
             // REMOVE AS AGREGADAS QUE FORAM RETIRADAS DO CADASTRO APÓS A ATUALIZAÇÃO DA MESMA
             ComplexAggregate? complexAggregateReference = null;
@@ -45,6 +46,8 @@ namespace Api.Repositories.ComplexEntityAndAggregates
                 }
             }
 
+            complexPrincipal.ClearReadOnlyFKs();
+
             _dataContextEF.ComplexPrincipal.Update(complexPrincipal);
             await _dataContextEF.SaveChangesAsync();
 
@@ -53,8 +56,9 @@ namespace Api.Repositories.ComplexEntityAndAggregates
 
         public async Task DeleteAsync(ComplexPrincipal complexPrincipal)
         {
-            _dataContextEF.ComplexPrincipal
-                .Remove(complexPrincipal);
+            complexPrincipal.ClearReadOnlyFKs();
+
+            _dataContextEF.ComplexPrincipal.Remove(complexPrincipal);
             await _dataContextEF.SaveChangesAsync();
 
             // NÃO REMOVE EM CASCATA
@@ -66,6 +70,7 @@ namespace Api.Repositories.ComplexEntityAndAggregates
         public async Task<IList<ComplexPrincipal>> GetAsync()
         {
             return await _dataContextEF.ComplexPrincipal.AsNoTracking()
+                .Include(cp => cp.ComplexSimpleFK)
                 .Include(cp => cp.ComplexAggregates)
                     .ThenInclude(ca => ca.ComplexSubAggregates)
                 .ToListAsync();
@@ -74,6 +79,7 @@ namespace Api.Repositories.ComplexEntityAndAggregates
         public async Task<ComplexPrincipal?> GetAsync(int complexPrincipalId)
         {
             return await _dataContextEF.ComplexPrincipal.AsNoTracking()
+                .Include(cp => cp.ComplexSimpleFK)
                 .Include(cp => cp.ComplexAggregates)
                     .ThenInclude(ca => ca.ComplexSubAggregates)
                 .FirstOrDefaultAsync(cp => cp.Id == complexPrincipalId);
