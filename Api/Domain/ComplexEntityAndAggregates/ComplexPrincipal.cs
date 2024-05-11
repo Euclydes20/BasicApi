@@ -8,8 +8,8 @@
         private int _complexSimpleFKId;
         public int? ComplexSimpleFKId
         {
-            get { return _complexSimpleFKId; }
-            set { _complexSimpleFKId = value ?? 0; }
+            get => _complexSimpleFKId;
+            set => _complexSimpleFKId = value ?? 0;
         }
 
         public List<ComplexAggregate> ComplexAggregates { get; set; } = [];

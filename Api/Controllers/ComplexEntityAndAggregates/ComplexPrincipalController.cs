@@ -102,5 +102,49 @@ namespace Api.Controllers.ComplexEntityAndAggregates
                 return BadRequest(Extensions.ResolveResponseException(ex, response));
             }
         }
+
+        //[Authorization(true)]
+        [HttpGet]
+        [Route("{page:int}/{pageSize:int:max(10)}/{search?}")]
+        public async Task<IActionResult> GetAsync(int page, int pageSize, string search = "")
+        {
+            var response = new ResponseInfo<IList<ComplexPrincipal>>();
+            try
+            {
+                response.Data = await _complexPrincipalService.GetAsync(page, pageSize, search);
+
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(Extensions.ResolveResponseException(ex, response));
+            }
+        }
+
+        //[Authorization(true)]
+        [HttpPost]
+        [Route("GenerateRandom/{quantity:int}/{returnOnlyLast:bool?}")]
+        public async Task<IActionResult> GenerateRandom(int quantity, bool returnOnlyLast = false)
+        {
+            var response = new ResponseInfo<IList<ComplexPrincipal>>();
+            try
+            {
+                response.Data = await _complexPrincipalService.GenerateRandom(quantity);
+                int totalCount = response.Data.Count + response.Data.Sum(d => d.ComplexAggregates.Count + d.ComplexAggregates.Sum(d2 => d2.ComplexSubAggregates.Count));
+                response.Message = $"Generated {response.Data.Count} (considering aggregates = {totalCount}) entity(ies).";
+
+                if (returnOnlyLast)
+                {
+                    response.Data = response.Data.TakeLast(1).ToList();
+                    response.Message += " Returned last.";
+                }
+
+                return StatusCode(StatusCodes.Status201Created, response);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(Extensions.ResolveResponseException(ex, response));
+            }
+        }
     }
 }

@@ -2,6 +2,7 @@
 using Api.Infra.Database;
 using Api.Models.Exceptions;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
 using System.Linq.Expressions;
 
 namespace Api.Repositories.ComplexEntityAndAggregates
@@ -15,6 +16,17 @@ namespace Api.Repositories.ComplexEntityAndAggregates
             complexPrincipal.ClearReadOnlyFKs();
 
             await _dataContextEF.ComplexPrincipal.AddAsync(complexPrincipal);
+            await _dataContextEF.SaveChangesAsync();
+
+            return complexPrincipal;
+        }
+        
+        public async Task<IList<ComplexPrincipal>> AddAsync(IList<ComplexPrincipal> complexPrincipal)
+        {
+            foreach (ComplexPrincipal cp in complexPrincipal)
+                cp.ClearReadOnlyFKs();
+
+            await _dataContextEF.ComplexPrincipal.AddRangeAsync(complexPrincipal);
             await _dataContextEF.SaveChangesAsync();
 
             return complexPrincipal;
@@ -69,7 +81,7 @@ namespace Api.Repositories.ComplexEntityAndAggregates
 
         public async Task<IList<ComplexPrincipal>> GetAsync()
         {
-            return await _dataContextEF.ComplexPrincipal.AsNoTracking()
+            return await _dataContextEF.ComplexPrincipal.AsNoTracking().AsSplitQuery()
                 .Include(cp => cp.ComplexSimpleFK)
                 .Include(cp => cp.ComplexAggregates)
                     .ThenInclude(ca => ca.ComplexSubAggregates)
@@ -78,11 +90,32 @@ namespace Api.Repositories.ComplexEntityAndAggregates
 
         public async Task<ComplexPrincipal?> GetAsync(int complexPrincipalId)
         {
-            return await _dataContextEF.ComplexPrincipal.AsNoTracking()
+            return await _dataContextEF.ComplexPrincipal.AsNoTracking().AsSplitQuery()
                 .Include(cp => cp.ComplexSimpleFK)
                 .Include(cp => cp.ComplexAggregates)
                     .ThenInclude(ca => ca.ComplexSubAggregates)
                 .FirstOrDefaultAsync(cp => cp.Id == complexPrincipalId);
+        }
+
+        public async Task<IList<ComplexPrincipal>> GetAsync(int page, int pageSize, string search = "")
+        {
+            var query = _dataContextEF.ComplexPrincipal.AsNoTracking().AsSplitQuery()
+                .Include(cp => cp.ComplexSimpleFK)
+                .Include(cp => cp.ComplexAggregates)
+                .ThenInclude(ca => ca.ComplexSubAggregates).AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(search))
+                query = query.Where(cp => EF.Functions.ILike(EF.Functions.Unaccent(cp.Description), EF.Functions.Unaccent($"%{search}%")));
+
+            return await query.Skip(page - 1)
+                .Take(pageSize)
+                .ToListAsync();
+        }
+
+        public async Task<IList<ComplexSimpleFK>> GetSimpleFKsAsync()
+        {
+            return await _dataContextEF.ComplexSimpleFK.AsNoTracking()
+                .ToListAsync();
         }
 
         public async Task<bool> ExistsAsync(Expression<Func<ComplexPrincipal, bool>> func)

@@ -45,5 +45,6 @@ namespace Api.Infra.Database
         public DbSet<ComplexPrincipal> ComplexPrincipal { get; set; }
         public DbSet<ComplexAggregate> ComplexAggregate { get; set; }
         public DbSet<ComplexSubAggregate> ComplexSubAggregate { get; set; }
+        public DbSet<ComplexSimpleFK> ComplexSimpleFK { get; set; }
     }
 }
