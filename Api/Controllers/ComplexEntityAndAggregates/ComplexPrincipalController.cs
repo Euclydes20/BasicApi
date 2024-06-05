@@ -2,11 +2,13 @@
 using Api.Domain.ComplexEntityAndAggregates;
 using Api.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace Api.Controllers.ComplexEntityAndAggregates
 {
     [ApiController]
     //[Authorize]
+    [EnableRateLimiting("fixed2")]
     [Route("v1/[controller]")]
     [Tags("Complex Principal Entity - Test")]
     public sealed class ComplexPrincipalController(IComplexPrincipalService complexPrincipalService) : ControllerBase
