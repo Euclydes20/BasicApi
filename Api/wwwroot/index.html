@@ -1,0 +1,37 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+</head>
+<body>
+    <script>
+        function connect() {
+            const webSocket = new WebSocket("ws://localhost:7025/ws2?name=Euclydes&access_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9zaWQiOiIxIiwibmFtZWlkIjoiQWRtIiwidW5pcXVlX25hbWUiOiJBZG1pbmlzdHJhZG9yIiwicm9sZSI6IlRydWUiLCJQcm92aXNvcnlQYXNzd29yZCI6IkZhbHNlIiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9leHBpcmF0aW9uIjoiMTkvMDgvMjAyNCAwOTo1MzowNiIsIm5iZiI6MTcyNDAyODc4NiwiZXhwIjoxNzI0MDcxOTg2LCJpYXQiOjE3MjQwMjg3ODZ9.CXhdLdzJUm_b_lCu5GMkuKgeBHgsPUKtzlHvHFOMKNU");
+            webSocket.onopen = function (event) {
+                let count = 0;
+                const intervalId = setInterval(function () {
+                    if (webSocket.readyState == 1) {
+                        webSocket.send("Request number " + ++count);
+                        return;
+                    }
+                    clearInterval(intervalId);
+                }, 1000);
+            };
+            webSocket.onmessage = function (event) {
+                console.log(event.data);
+            };
+            webSocket.onerror = function (error) {
+                console.log("Error: " + (error.message || "?"));
+                if (webSocket.readyState > 1)
+                    webSocket.close();
+            };
+            webSocket.onclose = function (event) {
+                console.log("Connection closed. Trying reconnect in 1 second...", event.reason);
+                setTimeout(connect, 1000);
+            };
+        }
+        connect();
+    </script>
+</body>
+</html>

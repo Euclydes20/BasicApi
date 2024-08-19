@@ -9,6 +9,8 @@ namespace Api
 {
     public class Startup
     {
+        private static readonly List<string> manualTokenSegments = ["/SessionService", "/ws", "/ws2"];
+
         internal static void SetAuthenticationService(IServiceCollection services)
         {
             services.AddAuthentication(x =>
@@ -37,14 +39,10 @@ namespace Api
                         var accessToken = context.Request.Query["access_token"];
                         var path = context.HttpContext.Request.Path;
 
-                        if (string.IsNullOrEmpty(context.Token) &&
-                        (path.StartsWithSegments("/SessionService")))
+                        if (!string.IsNullOrEmpty(accessToken) && string.IsNullOrEmpty(context.Token) && manualTokenSegments.Exists(mts => path.StartsWithSegments(mts, StringComparison.OrdinalIgnoreCase)))
                         {
-                            if (!string.IsNullOrEmpty(accessToken))
-                            {
-                                context.Request.Headers["Authorization"] = "Bearer " + accessToken;
-                                context.Token = accessToken;
-                            }
+                            context.Request.Headers.Authorization = "Bearer " + accessToken;
+                            context.Token = accessToken;
                         }
 
                         return Task.CompletedTask;

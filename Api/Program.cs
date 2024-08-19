@@ -5,8 +5,15 @@ using FluentMigrator.Runner;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.AspNetCore.Rewrite;
 using MyCSharp.HttpUserAgentParser.DependencyInjection;
+using System.Net.Sockets;
+using System;
+using System.Net.WebSockets;
+using System.Text;
 using System.Threading.RateLimiting;
 using YamlDotNet.Core.Tokens;
+using Microsoft.AspNetCore.DataProtection;
+using static LinqToDB.Sql;
+using Microsoft.AspNetCore.Authentication;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -160,10 +167,124 @@ app.UseRewriter(rewriteOptions);
 //app.UseSession();
 app.UseAuthentication();
 app.UseMiddleware<AuthorizationMiddleware>();
-
+app.UseWebSockets();
 app.UseEndpoints(endpoints =>
 {
     _ = endpoints.MapControllers().RequireRateLimiting("fixed");
 });
+
+
+app.Map("/ws", async (context) =>
+{
+    if (context.WebSockets.IsWebSocketRequest)
+    {
+        using var ws = await context.WebSockets.AcceptWebSocketAsync();
+        while (true)
+        {
+            if (ws.State != WebSocketState.Open)
+                break;
+
+            // Enviar mensagem
+            string message = "The current time is: " + DateTime.Now.ToString("HH:mm:ss");
+            byte[] bytes = Encoding.UTF8.GetBytes(message);
+            ArraySegment<byte> arraySegment = new(bytes, 0, bytes.Length);
+            await ws.SendAsync(arraySegment, WebSocketMessageType.Text, true, CancellationToken.None);
+
+            await Task.Delay(1000);
+            //Thread.Sleep(10000);
+        }
+        return;
+    }
+    context.Response.StatusCode = StatusCodes.Status400BadRequest;
+});
+
+List<WebSocket> connections = [];
+static async Task ReceiveMessage(WebSocket socket, Action<WebSocketReceiveResult, byte[]> handleMessage)
+{
+    byte[] buffer = new byte[1024 * 4];
+    while (socket.State is WebSocketState.Open)
+    {
+        var result = await socket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
+        handleMessage(result, buffer);
+    }
+}
+async Task Broadcast(string message)
+{
+    if (!string.IsNullOrWhiteSpace(message))
+    {
+        if (message.EndsWith("number 7"))
+            throw new Exception("Number 7 is not allowed");
+        message += ". ";
+    }
+    byte[] bytes = Encoding.UTF8.GetBytes(message + "The current time is: " + DateTime.Now.ToString("HH:mm:ss"));
+    foreach (var socket in connections)
+    {
+        if (socket.State is WebSocketState.Open)
+        {
+            var arraySegment = new ArraySegment<byte>(bytes, 0, bytes.Length);
+            await socket.SendAsync(arraySegment, WebSocketMessageType.Text, true, CancellationToken.None);
+        }
+    }
+}
+app.Map("/ws2", async (context) =>
+{
+    /*string? token = context.Request.Query["token"];
+    if (string.IsNullOrWhiteSpace(token))
+    {
+        context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+        return;
+    }
+
+    token = token.Insert(0, "Bearer ");
+    context.Request.Headers.TryAdd("Authorization", token);
+
+    AuthenticateResult authenticateResult = await context.AuthenticateAsync();
+    if (!authenticateResult.Succeeded)
+    {
+        context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+        return;
+    }*/
+
+    if (context.WebSockets.IsWebSocketRequest)
+    {
+        string? curName = context.Request.Query["name"];
+        if (string.IsNullOrWhiteSpace(curName))
+            curName = "Anonymous";
+
+        using var ws = await context.WebSockets.AcceptWebSocketAsync();
+        connections.Add(ws);
+
+        await Broadcast($"{curName} joined the room");
+        await Broadcast($"{connections.Count} users connected");
+        await ReceiveMessage(ws, async (result, buffer) =>
+        {
+            try
+            {
+                if (result.MessageType is WebSocketMessageType.Text)
+                {
+                    string message = Encoding.UTF8.GetString(buffer, 0, result.Count);
+                    await Broadcast($"{curName}: {message}");
+                    return;
+                }
+                if (result.MessageType is WebSocketMessageType.Close || ws.State is WebSocketState.Aborted)
+                {
+                    connections.Remove(ws);
+                    await Broadcast($"{curName} left the room");
+                    await Broadcast($"{connections.Count} users connected");
+                    await ws.CloseAsync(result.CloseStatus ?? WebSocketCloseStatus.NormalClosure, result.CloseStatusDescription, CancellationToken.None);
+                    return;
+                }
+            }
+            catch (Exception ex)
+            {
+                byte[] bytes = Encoding.UTF8.GetBytes(ex.Message);
+                var arraySegment = new ArraySegment<byte>(bytes, 0, bytes.Length);
+                await ws.SendAsync(arraySegment, WebSocketMessageType.Text, true, CancellationToken.None);
+            }
+        });
+        return;
+    }
+    context.Response.StatusCode = StatusCodes.Status400BadRequest;
+}).RequireAuthorization();
 
 app.Run();
